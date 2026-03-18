@@ -22,4 +22,11 @@ jobs:
 
       - name: Execute Python Script
         run: python news_bot.py
-        
+      - name: Commit and Push Changes
+        run:
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "Updated News Website" || exit 0
+          git push
+          
