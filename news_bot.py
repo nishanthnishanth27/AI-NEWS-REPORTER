@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 
 def fetch_news():
+    AUTHOR NAME = "NISHANTH"
+    PROJECT_NAME = "AI & TECH NEWS REPORTER
     # Using a different source (BBC Technology) for more stability
     url = "https://www.bbc.com/technology"
     headers = {
