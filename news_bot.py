@@ -69,24 +69,24 @@ def fetch_news():
                 html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
             if count == 5: break
     except: pass
-
-    # 3. POLIMER NEWS
+    # # 3. DINAMALAR NEWS
     try:
-        html_content += "<h2>📺 Polimer News (Tamil News)</h2>"
-        res = requests.get("https://www.polimernews.com/category/tamilnadu", headers=headers, timeout=15)
+        html_content += "<h2>📰 Dinamalar Headlines</h2>"
+        res = requests.get("https://www.dinamalar.com/index.php", headers=headers, timeout=15)
         soup = BeautifulSoup(res.content, 'html.parser')
         count = 0
-        # Aggressive Polimer Scraping
-        for item in soup.find_all(['h4', 'a'], href=True):
+        # Dinamalar main headlines
+        for item in soup.find_all('a', href=True):
             title = item.get_text().strip()
-            if len(title) > 30:
-                link = item['href'] if item.name == 'a' else item.find('a')['href']
-                if not link.startswith('http'): link = "https://www.polimernews.com" + link
+            # Only picking headlines that are long enough
+            if len(title) > 35 and "news_detail" in item['href']:
+                link = item['href']
+                if not link.startswith('http'): link = "https://www.dinamalar.com/" + link
                 count += 1
                 html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
             if count == 5: break
     except: pass
-
+        html_content += "<p>Dinamalar news load aagala.</p>"
     html_content += f"""
             <div class="footer">&copy; 2026 {AUTHOR_NAME} | Automated Daily via GitHub Actions</div>
         </div>
