@@ -6,8 +6,7 @@ def fetch_news():
     AUTHOR_NAME = "NISHANTH"
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'ta,en-US;q=0.9,en;q=0.8'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 
     html_content = f"""
@@ -38,44 +37,7 @@ def fetch_news():
             </div>
     """
 
-    # --- 1. GLOBAL TECH NEWS (BBC) ---
+    # 1. GLOBAL TECH NEWS (BBC)
     try:
-        html_content += "<h2>🌐 Global Tech News (English)</h2>"
-        res = requests.get("https://www.bbc.com/technology", headers=headers, timeout=15)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        count = 0
-        for item in soup.find_all(['h2', 'h3']):
-            title = item.get_text().strip()
-            anchor = item.find_parent('a') or item.find('a')
-            if anchor and len(title) > 25:
-                link = anchor['href']
-                if not link.startswith('http'): link = "https://www.bbc.com" + link
-                count += 1
-                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">Read Full Article →</a></div>'
-            if count == 5: break
-    except: pass
-
-    # --- 2. PUTHIYA THALAIMURAI ---
-    try:
-        html_content += "<h2>🔥 Puthiya Thalaimurai (Tamil News)</h2>"
-        res = requests.get("https://www.puthiyathalaimurai.com/tamilnadu", headers=headers, timeout=15)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        count = 0
-        for a in soup.find_all('a', href=True):
-            title = a.get_text().strip()
-            if len(title) > 35 and "/tamilnadu/" in a['href']:
-                link = a['href']
-                if not link.startswith('http'): link = "https://www.puthiyathalaimurai.com" + link
-                count += 1
-                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
-            if count == 5: break
-    except: pass
-
-    # --- 3. POLIMER NEWS (100% WORKING LOGIC) ---
-    try:
-        html_content += "<h2>📺 Polimer News (Tamil News)</h2>"
-        res = requests.get("https://www.polimernews.com/category/tamilnadu", headers=headers, timeout=15)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        count = 0
-        # Polimer stores
-
+        html_content += "<h2>
+        
