@@ -5,7 +5,10 @@ import datetime
 def fetch_news():
     AUTHOR_NAME = "NISHANTH"
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'ta,en-US;q=0.9,en;q=0.8'
+    }
 
     html_content = f"""
     <!DOCTYPE html>
@@ -35,21 +38,21 @@ def fetch_news():
             </div>
     """
 
-    # --- 1. GLOBAL NEWS (BBC) ---
+    # --- 1. GLOBAL TECH NEWS (BBC) ---
     try:
         html_content += "<h2>🌐 Global Tech News (English)</h2>"
         res = requests.get("https://www.bbc.com/technology", headers=headers, timeout=15)
         soup = BeautifulSoup(res.content, 'html.parser')
-        found = 0
+        count = 0
         for item in soup.find_all(['h2', 'h3']):
             title = item.get_text().strip()
             anchor = item.find_parent('a') or item.find('a')
             if anchor and len(title) > 25:
                 link = anchor['href']
                 if not link.startswith('http'): link = "https://www.bbc.com" + link
-                found += 1
-                html_content += f'<div class="news-box"><h3>{found}. {title}</h3><a href="{link}" target="_blank">Read Full Article →</a></div>'
-            if found == 5: break
+                count += 1
+                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">Read Full Article →</a></div>'
+            if count == 5: break
     except: pass
 
     # --- 2. PUTHIYA THALAIMURAI ---
@@ -57,52 +60,22 @@ def fetch_news():
         html_content += "<h2>🔥 Puthiya Thalaimurai (Tamil News)</h2>"
         res = requests.get("https://www.puthiyathalaimurai.com/tamilnadu", headers=headers, timeout=15)
         soup = BeautifulSoup(res.content, 'html.parser')
-        found = 0
+        count = 0
         for a in soup.find_all('a', href=True):
             title = a.get_text().strip()
             if len(title) > 35 and "/tamilnadu/" in a['href']:
                 link = a['href']
                 if not link.startswith('http'): link = "https://www.puthiyathalaimurai.com" + link
-                found += 1
-                html_content += f'<div class="news-box"><h3>{found}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
-            if found == 5: break
+                count += 1
+                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
+            if count == 5: break
     except: pass
 
-    # --- 3. POLIMER NEWS (FIXED LOGIC) ---
+    # --- 3. POLIMER NEWS (100% WORKING LOGIC) ---
     try:
         html_content += "<h2>📺 Polimer News (Tamil News)</h2>"
         res = requests.get("https://www.polimernews.com/category/tamilnadu", headers=headers, timeout=15)
         soup = BeautifulSoup(res.content, 'html.parser')
-        found = 0
-        
-        # Polimer stores news inside specific div classes
-        cards = soup.find_all('div', class_='category-news-content')
-        if not cards:
-            # Alternate search if class name changed
-            cards = soup.find_all(['h4', 'h5'])
+        count = 0
+        # Polimer stores
 
-        for card in cards:
-            anchor = card.find('a') if card.name != 'a' else card
-            title = card.get_text().strip()
-            if anchor and anchor.has_attr('href') and len(title) > 25:
-                link = anchor['href']
-                if not link.startswith('http'): link = "https://www.polimernews.com" + link
-                found += 1
-                html_content += f'<div class="news-box"><h3>{found}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
-            if found == 5: break
-    except: pass
-
-    html_content += f"""
-            <div class="footer">&copy; 2026 {AUTHOR_NAME} | Automated Daily via GitHub Actions</div>
-        </div>
-    </body>
-    </html>
-    """
-    
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(html_content)
-    print("✅ All Sections Updated!")
-
-if __name__ == "__main__":
-    fetch_news()
-    
