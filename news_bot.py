@@ -71,24 +71,6 @@ def fetch_news():
                 html_content += f'<div class="news-box"><h3>{found}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
             if found == 5: break
     except: html_content += "<p>Unable to load Puthiya Thalaimurai.</p>"
-
-    # --- 3. POLIMER NEWS ---
-    try:
-        html_content += "<h2>📺 Polimer News (Tamil News)</h2>"
-        res = requests.get("https://www.polimernews.com/category/tamilnadu", headers=headers, timeout=10)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        found = 0
-        # Polimer usually uses h4 or specific anchors
-        for item in soup.find_all(['h4', 'a'], href=True):
-            title = item.get_text().strip()
-            if len(title) > 30:
-                link = item['href'] if item.name == 'a' else item.find('a')['href']
-                if not link.startswith('http'): link = "https://www.polimernews.com" + link
-                found += 1
-                html_content += f'<div class="news-box"><h3>{found}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
-            if found == 5: break
-    except: html_content += "<p>Unable to load Polimer News.</p>"
-
     html_content += f"""
             <div class="footer">&copy; 2026 {AUTHOR_NAME} | Automated Daily via GitHub Actions</div>
         </div>
