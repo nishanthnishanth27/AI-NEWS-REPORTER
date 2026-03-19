@@ -39,5 +39,65 @@ def fetch_news():
 
     # 1. GLOBAL TECH NEWS (BBC)
     try:
-        html_content += "<h2>
-        
+        html_content += "<h2>🌐 Global Tech News (English)</h2>"
+        res = requests.get("https://www.bbc.com/technology", headers=headers, timeout=15)
+        soup = BeautifulSoup(res.content, 'html.parser')
+        count = 0
+        for item in soup.find_all(['h2', 'h3']):
+            title = item.get_text().strip()
+            anchor = item.find_parent('a') or item.find('a')
+            if anchor and len(title) > 25:
+                link = anchor['href']
+                if not link.startswith('http'): link = "https://www.bbc.com" + link
+                count += 1
+                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">Read Full Article →</a></div>'
+            if count == 5: break
+    except: pass
+
+    # 2. PUTHIYA THALAIMURAI
+    try:
+        html_content += "<h2>🔥 Puthiya Thalaimurai (Tamil News)</h2>"
+        res = requests.get("https://www.puthiyathalaimurai.com/tamilnadu", headers=headers, timeout=15)
+        soup = BeautifulSoup(res.content, 'html.parser')
+        count = 0
+        for a in soup.find_all('a', href=True):
+            title = a.get_text().strip()
+            if len(title) > 35 and "/tamilnadu/" in a['href']:
+                link = a['href']
+                if not link.startswith('http'): link = "https://www.puthiyathalaimurai.com" + link
+                count += 1
+                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
+            if count == 5: break
+    except: pass
+
+    # 3. POLIMER NEWS
+    try:
+        html_content += "<h2>📺 Polimer News (Tamil News)</h2>"
+        res = requests.get("https://www.polimernews.com/category/tamilnadu", headers=headers, timeout=15)
+        soup = BeautifulSoup(res.content, 'html.parser')
+        count = 0
+        # Aggressive Polimer Scraping
+        for item in soup.find_all(['h4', 'a'], href=True):
+            title = item.get_text().strip()
+            if len(title) > 30:
+                link = item['href'] if item.name == 'a' else item.find('a')['href']
+                if not link.startswith('http'): link = "https://www.polimernews.com" + link
+                count += 1
+                html_content += f'<div class="news-box"><h3>{count}. {title}</h3><a href="{link}" target="_blank">முழு செய்தியைப் படிக்க →</a></div>'
+            if count == 5: break
+    except: pass
+
+    html_content += f"""
+            <div class="footer">&copy; 2026 {AUTHOR_NAME} | Automated Daily via GitHub Actions</div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("✅ Website updated successfully!")
+
+if __name__ == "__main__":
+    fetch_news()
+    
