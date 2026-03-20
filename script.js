@@ -92,3 +92,7 @@ async function getAISummary(title, desc) {
 }
 
 window.onload = fetchNews;
+setInterval(() => {
+    fetchNews();
+}, 900000); 
+
