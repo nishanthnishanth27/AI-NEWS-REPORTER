@@ -8,7 +8,7 @@ async function fetchNews() {
 
     try {
         // Corrected Fetch URL for GNews
-        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=10&apikey=${GNEWS_API_KEY}`;
+        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=10&apikey={GNEWS_API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
         
