@@ -37,4 +37,24 @@ function displayNews(articles) {
 
 // Initial Fetch
 fetchNews();
+const GEMINI_API_KEY = 'AIzaSyCTNqMg9umScbCqFphUyaAl5NAl2RUrKRk'; // Inga unga Gemini key-ah podunga
+
+async function getAISummary(title, desc) {
+    const prompt = `Summarize this news in 2 lines in Tamil: Title: ${title}. Content: ${desc}`;
+    
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+        const data = await response.json();
+        const summary = data.candidates[0].content.parts[0].text;
+        alert("AI Summary (Tamil): \n" + summary);
+    } catch (e) {
+        alert("AI could not summarize this at the moment.");
+    }
+}
+
 
