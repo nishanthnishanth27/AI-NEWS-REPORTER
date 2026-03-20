@@ -4,20 +4,23 @@ const GEMINI_API_KEY = 'AIzaSyCTNqWg9umScbCqFphUyaAI5NA12RUrKRk';
 async function fetchNews() {
     const query = document.getElementById('searchInput').value || 'Artificial Intelligence';
     const grid = document.getElementById('newsGrid');
-    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse">🤖 AI Engine fetching live news...</p>';
+    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse">🤖 AI Fetching News...</p>';
 
     try {
-        // GNews API URL structure
-        const response = await fetch(`https://gnews.io/api/v4/search?q=${query}&lang=en&country=us&max=10&apikey=${GNEWS_API_KEY}`);
+        // Corrected Fetch URL for GNews
+        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=10&apikey=${GNEWS_API_KEY}`;
+        const response = await fetch(url);
         const data = await response.json();
         
         if (data.articles && data.articles.length > 0) {
             displayNews(data.articles);
+        } else if (data.errors) {
+            grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">API Issue: ${data.errors[0]}</p>`;
         } else {
-            grid.innerHTML = `<p class="text-red-500 text-center col-span-full">No news found. Try another topic!</p>`;
+            grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">No news found for this topic.</p>`;
         }
     } catch (error) {
-        grid.innerHTML = `<p class="text-red-500 text-center col-span-full">API Error. Check your GNews key.</p>`;
+        grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">Check connection & Refresh.</p>`;
     }
 }
 
@@ -26,18 +29,18 @@ function displayNews(articles) {
     grid.innerHTML = '';
 
     articles.forEach(article => {
-        const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
-        const safeDesc = article.description ? article.description.replace(/'/g, "").replace(/"/g, "") : "No description";
+        // Removing special characters to prevent JS errors in button
+        const cleanTitle = article.title.replace(/['"]/g, "");
+        const cleanDesc = article.description ? article.description.replace(/['"]/g, "") : "Click read more for summary.";
         
         const card = `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl hover:border-blue-500 transition-all duration-300 shadow-2xl group flex flex-col h-full">
-                <img src="${article.image || 'https://via.placeholder.com/400x200'}" class="w-full h-48 object-cover rounded-xl mb-4 group-hover:scale-105 transition">
-                <h3 class="font-bold text-lg mb-2 text-blue-100">${article.title}</h3>
-                <p class="text-gray-400 text-sm mb-6 flex-grow">${article.description ? article.description.slice(0, 100) + '...' : 'Click read full for more details.'}</p>
-                <div class="flex justify-between items-center mt-auto">
-                    <a href="${article.url}" target="_blank" class="text-blue-500 font-bold text-sm hover:underline text-xs">Read Full Article</a>
-                    <button onclick="getAISummary('${safeTitle}', '${safeDesc}')" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-[10px] font-bold transition active:scale-95 shadow-lg shadow-blue-900/20">
+            <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl hover:border-blue-500 transition shadow-2xl flex flex-col h-full">
+                <img src="${article.image || 'https://via.placeholder.com/400x200?text=AI+News'}" class="w-full h-40 object-cover rounded-xl mb-4">
+                <h3 class="font-bold text-sm mb-2 text-blue-100">${article.title.slice(0, 70)}...</h3>
+                <div class="mt-auto flex justify-between items-center pt-4">
+                    <a href="${article.url}" target="_blank" class="text-blue-500 text-[10px] font-bold hover:underline">Read Full</a>
+                    <button onclick="getAISummary('${cleanTitle}', '${cleanDesc}')" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">
                         AI Summary
                     </button>
                 </div>
@@ -48,20 +51,18 @@ function displayNews(articles) {
 }
 
 async function getAISummary(title, desc) {
-    if (!desc || desc === "No description") return alert("Summary panna content illai!");
-    
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this news in 2 short lines in Tamil: ${title}. ${desc}` }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this in 2 lines of Tamil: ${title}. ${desc}` }] }] })
         });
         const data = await response.json();
-        const summary = data.candidates[0].content.parts[0].text;
-        alert("🤖 AI News Summary (Tamil):\n\n" + summary);
+        alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
     } catch (e) {
-        alert("Gemini AI is busy! Wait 10 seconds and try again.");
+        alert("AI is busy, please try again in 5 seconds!");
     }
 }
 
+// Initial fetch
 fetchNews();
