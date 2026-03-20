@@ -7,20 +7,18 @@ async function fetchNews() {
     grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse">🤖 AI Fetching News...</p>';
 
     try {
-        // Corrected Fetch URL using 'token' instead of 'apikey'
+        // GNews API strictly requires 'token' parameter
         const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=10&token=${GNEWS_API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
         
         if (data.articles && data.articles.length > 0) {
             displayNews(data.articles);
-        } else if (data.errors) {
-            grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">API Issue: ${data.errors[0]}</p>`;
         } else {
-            grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">No news found for this topic.</p>`;
+            grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">API Message: ${data.errors ? data.errors[0] : 'No news found'}</p>`;
         }
     } catch (error) {
-        grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">Check connection & Refresh.</p>`;
+        grid.innerHTML = `<p class="text-red-500 text-center col-span-full italic">Network Error. Refresh page.</p>`;
     }
 }
 
@@ -30,10 +28,10 @@ function displayNews(articles) {
 
     articles.forEach(article => {
         const cleanTitle = article.title.replace(/['"]/g, "");
-        const cleanDesc = article.description ? article.description.replace(/['"]/g, "") : "Click read more for summary.";
+        const cleanDesc = article.description ? article.description.replace(/['"]/g, "") : "AI Summary available.";
         
         const card = `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl hover:border-blue-500 transition shadow-2xl flex flex-col h-full text-left">
+            <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl hover:border-blue-500 transition shadow-2xl flex flex-col h-full">
                 <img src="${article.image || 'https://via.placeholder.com/400x200?text=AI+News'}" class="w-full h-40 object-cover rounded-xl mb-4">
                 <h3 class="font-bold text-sm mb-2 text-blue-100">${article.title.slice(0, 70)}...</h3>
                 <div class="mt-auto flex justify-between items-center pt-4">
@@ -57,12 +55,11 @@ async function getAISummary(title, desc) {
             body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this news in 2 short lines in Tamil: ${title}. ${desc}` }] }] })
         });
         const data = await response.json();
-        const summary = data.candidates[0].content.parts[0].text;
-        alert("🤖 AI News Summary (Tamil):\n\n" + summary);
+        alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
     } catch (e) {
-        alert("Gemini AI is busy! Wait 10 seconds and try again.");
+        alert("Gemini AI is busy! Try again in 5 seconds.");
     }
 }
 
-// Initial fetch when page loads
-fetchNews();
+// Ensure first load works
+window.onload = fetchNews;
