@@ -1,8 +1,9 @@
-const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk'; // Verify your key
+const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk';
 
 async function FetchNews() {
-    const userInput = document.getElementById('searchInput').value;
-    const query = userInput || 'Technology';
+    // 1. Search input-ah sariya edukkura logic
+    const inputField = document.getElementById('searchInput');
+    const query = inputField && inputField.value ? inputField.value : 'Technology';
     const grid = document.getElementById('newsGrid');
 
     grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse font-mono text-sm">🚀 BOOTING AI ENGINE...</p>';
@@ -20,6 +21,7 @@ async function FetchNews() {
             grid.innerHTML = '<p class="text-yellow-500 text-center col-span-full">No news found. Try another topic.</p>';
         }
     } catch (error) {
+        console.error(error);
         grid.innerHTML = '<p class="text-red-500 text-center col-span-full">⚠️ CONNECTION BUSY. CLICK SEARCH AGAIN.</p>';
     }
 }
@@ -65,11 +67,11 @@ async function getAISummary(title, desc) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `Summarize this in 2 short lines in Tamil: ${title}. ${desc}` }] }]
+                contents: [{ parts: [{ text: "Summarize this in 2 short lines in Tamil: " + title + ". " + desc }] }]
             })
         });
         const data = await response.json();
-        if (data.candidates) {
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
             alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
         } else {
             alert("AI is busy. Please try again!");
@@ -83,8 +85,9 @@ async function getAISummary(title, desc) {
 }
 
 function shareNews(title, url) {
-    const text = encodeURIComponent(`🗞️ AI News: ${title}\n\nLink: `);
-    window.open(`https://api.whatsapp.com/send?text=${text}${encodeURIComponent(url)}`, '_blank');
+    const text = encodeURIComponent("🗞️ AI News: " + title + "\n\nLink: ");
+    window.open("https://api.whatsapp.com/send?text=" + text + encodeURIComponent(url), '_blank');
 }
 
+// Intha line thaan start-laye news-ah fetch pannum
 window.onload = FetchNews;
