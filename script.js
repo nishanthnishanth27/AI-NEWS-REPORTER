@@ -52,8 +52,8 @@ function displayNews(articles) {
                         <button onclick="shareNews('${title}', '${link}')" class="text-green-500 text-[10px] font-bold">SHARE WA</button>
                     </div>
                     
-                    <button onclick="getAISummary('${title.replace(/'/g, "")}', '${description.replace(/'/g, "")}')" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg">
+                    <button onclick="getAISummary('${article.title.replace(/'/g, "")}', '${description.replace(/'/g, "")}')" 
+                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg">
                         ✨ GET TAMIL AI SUMMARY
                     </button>
                 </div>
@@ -69,17 +69,29 @@ function shareNews(title, url) {
 }
 
 async function getAISummary(title, desc) {
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "🤖 AI IS THINKING...";
+    btn.disabled = true;
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this in 2 short lines in Tamil: ${title}. ${desc}` }] }] })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Summarize this in 2 short lines in Tamil: ${title}. ${desc}` }] }]
+            })
         });
         const data = await response.json();
-        alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
+        if (data.candidates) {
+            alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
+        } else {
+            alert("AI is busy. Please try again!");
+        }
     } catch (e) {
-        alert("AI is busy! Refresh and try again.");
+        alert("Connection Error! Check your internet.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
 }
-
-window.onload = fetchNews;
