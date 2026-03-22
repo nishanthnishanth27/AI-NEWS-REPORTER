@@ -1,7 +1,7 @@
 const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk';
 
 async function FetchNews() {
-    // 1. Search input-ah sariya edukkura logic
+    
     const inputField = document.getElementById('searchInput');
     const query = inputField && inputField.value ? inputField.value : 'Technology';
     const grid = document.getElementById('newsGrid');
