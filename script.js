@@ -1,4 +1,3 @@
-const GNEWS_API_KEY = '3713a2237ee5e9d2812b765100a5009f'; 
 const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk';
 
 async function FetchNews() {
@@ -6,37 +5,46 @@ async function FetchNews() {
     const query = inputField && inputField.value ? inputField.value : 'Technology';
     const grid = document.getElementById('newsGrid');
 
-    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse font-mono text-sm">🚀 LOADING SECURE AI NEWS FEED...</p>';
+    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse font-mono text-sm">🚀 SYNCING TAMIL & ENGLISH AI FEEDS...</p>';
 
     try {
-        // FIXED: Using HTTPS GNews API to prevent Connection Error
-        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=12&apikey=${GNEWS_API_KEY}`;
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
+        const enRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
+        const taRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta`;
 
-        if (data.articles && data.articles.length > 0) {
-            displayNews(data.articles);
-        } else {
-            grid.innerHTML = '<p class="text-yellow-500 text-center col-span-full font-mono">No news found. Try "AI" or "Space".</p>';
+        const enUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(enRss)}`;
+        const taUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(taRss)}`;
+
+        const [enRes, taRes] = await Promise.all([fetch(enUrl), fetch(taUrl)]);
+        const enData = await enRes.json();
+        const taData = await taRes.json();
+
+        let mixedNews = [];
+        const enItems = enData.items || [];
+        const taItems = taData.items || [];
+        const maxLength = Math.max(enItems.length, taItems.length);
+
+        for (let i = 0; i < maxLength; i++) {
+            if (taItems[i]) mixedNews.push(taItems[i]);
+            if (enItems[i]) mixedNews.push(enItems[i]);
         }
+
+        displayNews(mixedNews, query);
     } catch (error) {
-        console.error("Fetch Error:", error);
-        grid.innerHTML = '<p class="text-red-500 text-center col-span-full font-mono uppercase tracking-widest">⚠️ CONNECTION ERROR: Check API Key or Data.</p>';
+        grid.innerHTML = '<p class="text-red-500 text-center col-span-full">⚠️ CONNECTION ERROR.</p>';
     }
 }
 
-function displayNews(articles) {
+function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = '';
 
     articles.forEach((article) => {
-        const imageUrl = article.image || 'https://images.unsplash.com/photo-1504711432869-5d39a110fdd7?q=80&w=400&h=250&auto=format&fit=crop';
-        const title = article.title;
-        const safeTitleForAI = title.replace(/[^a-zA-Z0-9 ]/g, " ");
+        const title = article.title.split(' - ')[0];
+        const randomId = Math.floor(Math.random() * 1000);
+        const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(searchQuery)}?lock=${randomId}`;
+        
+        // Cleaning title for the function call
+        const safeTitle = title.replace(/[^a-zA-Z0-9 ]/g, " ");
 
         const card = `
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all duration-300 shadow-2xl flex flex-col h-full">
@@ -46,10 +54,10 @@ function displayNews(articles) {
                 <h3 class="font-bold text-[14px] mb-4 text-white leading-tight flex-grow">${title}</h3>
                 <div class="mt-auto pt-4 border-t border-gray-800 flex flex-col gap-3">
                     <div class="flex justify-between items-center px-1">
-                        <a href="${article.url}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase tracking-tighter hover:underline">Read Source</a>
-                        <button onclick="shareNews('${safeTitleForAI}', '${article.url}')" class="text-green-500 text-[10px] font-bold uppercase tracking-tighter">WhatsApp</button>
+                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase">Read Source</a>
+                        <button onclick="shareNews('${safeTitle}', '${article.link}')" class="text-green-500 text-[10px] font-bold">WhatsApp</button>
                     </div>
-                    <button onclick="getAISummary(this, '${safeTitleForAI}')" 
+                    <button onclick="getAISummary(this, '${safeTitle}')" 
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
                         ✨ GET TAMIL AI SUMMARY
                     </button>
@@ -70,20 +78,24 @@ async function getAISummary(button, cleanTitle) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Summarize this in 2 short lines in Tamil: " + cleanTitle }] }]
+                contents: [{ 
+                    parts: [{ text: "Summarize this news title in 2 lines in Tamil language: " + cleanTitle }] 
+                }]
             })
         });
 
         const data = await response.json();
 
-        if (data.candidates && data.candidates[0].content) {
+        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
             const summary = data.candidates[0].content.parts[0].text;
             alert("🤖 TAMIL AI SUMMARY:\n\n" + summary);
         } else {
-            alert("Gemini AI is busy. Please try again!");
+            // Detailed Error for debugging in your browser console
+            console.log("Gemini API Response Error:", data);
+            alert("AI Error: Key busy or limit reached. Wait 30 seconds!");
         }
     } catch (e) {
-        alert("Summary Connection Error!");
+        alert("Connection Error! Try again.");
     } finally {
         button.innerText = originalText;
         button.disabled = false;
@@ -91,7 +103,8 @@ async function getAISummary(button, cleanTitle) {
 }
 
 function shareNews(title, url) {
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent("🗞️ " + title + "\n\nLink: " + url), '_blank');
+    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent("🗞️ " + title + "\n" + url), '_blank');
 }
 
 window.onload = FetchNews;
+
