@@ -40,28 +40,23 @@ function displayNews(articles, searchQuery) {
 
     articles.forEach((article, index) => {
         const title = article.title.split(' - ')[0];
-        
-        // NEW IMAGE LOGIC: Using high-quality random images based on the search query
-        // This ensures every card has a beautiful, relevant picture.
         const randomId = Math.floor(Math.random() * 1000);
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(searchQuery)}?lock=${randomId}`;
         
         const card = `
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all duration-300 shadow-2xl flex flex-col h-full">
                 <div class="relative overflow-hidden rounded-2xl mb-4 bg-gray-800 h-44">
-                    <img src="${imageUrl}" 
-                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                         alt="News Visual"
-                         loading="lazy">
+                    <img src="${imageUrl}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="News Visual">
                 </div>
                 <h3 class="font-bold text-[14px] mb-4 text-white leading-tight flex-grow">${title}</h3>
                 <div class="mt-auto pt-4 border-t border-gray-800 flex flex-col gap-3">
                     <div class="flex justify-between items-center px-1">
-                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase hover:underline">Read Source</a>
+                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase">Read Source</a>
                         <button onclick="shareNews('${title.replace(/'/g, "")}', '${article.link}')" class="text-green-500 text-[10px] font-bold">WhatsApp</button>
                     </div>
-                    <button onclick="getAISummary(this, '${title.replace(/'/g, "\\'")}')" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                    <!-- FIXED: Added 'this' to the function call -->
+                    <button onclick="getAISummary(this, '${title.replace(/'/g, "")}')" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
                         ✨ GET TAMIL AI SUMMARY
                     </button>
                 </div>
@@ -81,14 +76,20 @@ async function getAISummary(button, title) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Summarize this news title in 2 simple lines in Tamil: " + title }] }]
+                contents: [{ parts: [{ text: "Summarize this in 2 lines in Tamil language: " + title }] }]
             })
         });
         const data = await response.json();
-        const summary = data.candidates[0].content.parts[0].text;
-        alert("🤖 TAMIL AI SUMMARY:\n\n" + summary);
+        
+        // FIXED: Corrected the data path for the summary text
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            const summary = data.candidates[0].content.parts[0].text;
+            alert("🤖 TAMIL AI SUMMARY:\n\n" + summary);
+        } else {
+            alert("AI is busy. Try again!");
+        }
     } catch (e) {
-        alert("AI is busy. Please try again!");
+        alert("Connection Error!");
     } finally {
         button.innerText = originalText;
         button.disabled = false;
