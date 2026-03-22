@@ -1,28 +1,47 @@
 const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk';
 
 async function FetchNews() {
-    
     const inputField = document.getElementById('searchInput');
     const query = inputField && inputField.value ? inputField.value : 'Technology';
     const grid = document.getElementById('newsGrid');
 
-    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse font-mono text-sm">🚀 BOOTING AI ENGINE...</p>';
+    // Loading state
+    grid.innerHTML = '<p class="text-center col-span-full text-blue-400 animate-pulse font-mono text-sm">🚀 FETCHING TAMIL & ENGLISH AI NEWS...</p>';
 
     try {
-        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
-        const finalUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+        // 1. English News RSS URL
+        const enRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
+        // 2. Tamil News RSS URL
+        const taRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta`;
 
-        const response = await fetch(finalUrl);
-        const data = await response.json();
+        // Conversion via RSS2JSON
+        const enUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(enRss)}`;
+        const taUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(taRss)}`;
 
-        if (data.items && data.items.length > 0) {
-            displayNews(data.items);
+        // Fetching both at the same time
+        const [enRes, taRes] = await Promise.all([fetch(enUrl), fetch(taUrl)]);
+        const enData = await enRes.json();
+        const taData = await taRes.json();
+
+        // Mixing Logic: One Tamil card, then one English card
+        let mixedNews = [];
+        const enItems = enData.items || [];
+        const taItems = taData.items || [];
+        const maxLength = Math.max(enItems.length, taItems.length);
+
+        for (let i = 0; i < maxLength; i++) {
+            if (taItems[i]) mixedNews.push(taItems[i]);
+            if (enItems[i]) mixedNews.push(enItems[i]);
+        }
+
+        if (mixedNews.length > 0) {
+            displayNews(mixedNews);
         } else {
-            grid.innerHTML = '<p class="text-yellow-500 text-center col-span-full">No news found. Try another topic.</p>';
+            grid.innerHTML = '<p class="text-yellow-500 text-center col-span-full">No news found for this topic.</p>';
         }
     } catch (error) {
         console.error(error);
-        grid.innerHTML = '<p class="text-red-500 text-center col-span-full">⚠️ CONNECTION BUSY. CLICK SEARCH AGAIN.</p>';
+        grid.innerHTML = '<p class="text-red-500 text-center col-span-full">⚠️ CONNECTION ERROR. PLEASE TRY AGAIN.</p>';
     }
 }
 
@@ -35,18 +54,19 @@ function displayNews(articles) {
         const description = article.description.replace(/<[^>]*>?/gm, '').slice(0, 100);
         
         const card = `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all duration-300 shadow-2xl group">
+            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all duration-300 shadow-2xl group flex flex-col h-full">
                 <div class="relative overflow-hidden rounded-2xl mb-4 text-center">
-                    <img src="${article.thumbnail || 'https://via.placeholder.com/400x200?text=AI+News+Reporter'}" class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="${article.thumbnail || 'https://via.placeholder.com/400x200?text=AI+News+Reporter'}" 
+                         class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500">
                 </div>
-                <h3 class="font-bold text-[13px] mb-3 text-white leading-tight">${title.slice(0, 85)}...</h3>
+                <h3 class="font-bold text-[13px] mb-3 text-white leading-tight flex-grow">${title}</h3>
                 <div class="mt-auto pt-4 border-t border-gray-800 flex flex-col gap-3">
                     <div class="flex justify-between items-center px-2">
-                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black hover:underline uppercase tracking-widest">READ SOURCE</a>
-                        <button onclick="shareNews('${title.replace(/'/g, "")}', '${article.link}')" class="text-green-500 text-[10px] font-bold">SHARE WA</button>
+                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase hover:underline">Source</a>
+                        <button onclick="shareNews('${title.replace(/'/g, "")}', '${article.link}')" class="text-green-500 text-[10px] font-bold">WhatsApp</button>
                     </div>
                     <button onclick="getAISummary('${title.replace(/'/g, "")}', '${description.replace(/'/g, "")}')" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
                         ✨ GET TAMIL AI SUMMARY
                     </button>
                 </div>
@@ -72,12 +92,12 @@ async function getAISummary(title, desc) {
         });
         const data = await response.json();
         if (data.candidates && data.candidates[0].content.parts[0].text) {
-            alert("🤖 AI Summary (Tamil):\n\n" + data.candidates[0].content.parts[0].text);
+            alert("🤖 Tamil AI Summary:\n\n" + data.candidates[0].content.parts[0].text);
         } else {
             alert("AI is busy. Please try again!");
         }
     } catch (e) {
-        alert("Connection Error!");
+        alert("Connection Error! Check your internet.");
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
@@ -85,9 +105,10 @@ async function getAISummary(title, desc) {
 }
 
 function shareNews(title, url) {
-    const text = encodeURIComponent("🗞️ AI News: " + title + "\n\nLink: ");
+    const text = encodeURIComponent("🗞️ AI News: " + title + "\n\nRead more: ");
     window.open("https://api.whatsapp.com/send?text=" + text + encodeURIComponent(url), '_blank');
 }
 
-// Intha line thaan start-laye news-ah fetch pannum
+// Initial fetch on load
 window.onload = FetchNews;
+    
