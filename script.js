@@ -1,4 +1,4 @@
-const GEMINI_API_KEY = 'AIzaSyCThwqagkuuScbCqFphUyaAI5NA12RUrRk';
+const GEMINI_API_KEY = 'AIzaSyBFH9fqJD_39uIPMhafxHaw3ggRbuVXw_o';
 
 // 1. Fetch function with High Reliability
 async function FetchNews() {
