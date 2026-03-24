@@ -44,6 +44,16 @@
     </nav>
 
     <div class="p-6 max-w-4xl mx-auto">
+        <div class="p-6 max-w-4xl mx-auto relative">
+    <div class="flex gap-2 bg-gray-900 p-2 rounded-2xl border border-gray-800 focus-within:border-blue-500 items-center">
+        <input type="text" id="searchInput" oninput="showSuggestions(this.value)" placeholder="Search topics (AI, Cricket, Space)..." autocomplete="off" class="flex-1 bg-transparent p-3 outline-none text-gray-200">
+        <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-400 hover:text-blue-500 transition-colors text-xl">🎤</button>
+        <button onclick="FetchNews()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">Search</button>
+    </div>
+
+    <div id="suggestionBox" class="absolute left-6 right-6 mt-2 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-[60] hidden overflow-hidden backdrop-blur-md bg-opacity-95">
+        </div>
+        </div>
         <div class="flex gap-2 bg-gray-900 p-2 rounded-2xl border border-gray-800 focus-within:border-blue-500 items-center">
             <input type="text" id="searchInput" placeholder="Search topics..." class="flex-1 bg-transparent p-3 outline-none">
             <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-400 text-xl">🎤</button>
