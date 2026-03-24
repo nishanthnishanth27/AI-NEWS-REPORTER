@@ -92,20 +92,44 @@ function displayNews(articles, searchQuery) {
 }
 
 // 4. Gemini AI Summary
+// Gemini AI Summary with Voice Reader
 async function getAISummary(button, title) {
     const originalText = button.innerText;
     button.innerText = "🤖 THINKING...";
     button.disabled = true;
 
+    // Stop any previous speech so they don't overlap
+    window.speechSynthesis.cancel();
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Explain this news in 2 lines in Tamil language: " + title }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Explain this news in 2 short lines in Tamil language: " + title }] }] })
         });
+        
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
+
+        // --- START VOICE READER LOGIC ---
+        const speech = new SpeechSynthesisUtterance(summary);
+        speech.lang = 'ta-IN'; // Sets voice to Tamil (India)
+        speech.rate = 0.9;     // Slightly slower for clarity
+        speech.pitch = 1.0; 
+        
+        window.speechSynthesis.speak(speech);
+        // --- END VOICE READER LOGIC ---
+
         alert("🤖 TAMIL AI SUMMARY:\n\n" + summary);
+
+    } catch (e) {
+        alert("AI Error: Key busy or limit reached!");
+    } finally {
+        button.innerText = originalText;
+        button.disabled = false;
+    }
+}
+
     } catch (e) {
         alert("AI Error: Key busy or limit reached. Wait 30 seconds!");
     } finally {
