@@ -1,28 +1,24 @@
-const GEMINI_API_KEY = 'AIzaSyCTheqagkuuScbCqFphiyakl5NA12RURrk'; 
+const GEMINI_API_KEY = 'AIzaSyCTheqagkuuScbCqFphiyakl5NA12RURrk';
 
-// 1. Voice Search (Microphone) Logic
+// 1. Voice Search (Microphone)
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
-    const inputField = document.getElementById('searchInput');
-
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("Voice search not supported in this browser.");
-        return;
-    }
+    
+    if (!SpeechRecognition) return alert("Mic not supported");
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'en-IN'; // Search logic is better in English
+    recognition.lang = 'en-IN';
 
     recognition.onstart = () => {
-        micBtn.innerText = "🛑"; 
+        micBtn.innerText = "🛑";
         micBtn.classList.add("text-red-500", "animate-pulse");
     };
 
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        inputField.value = transcript;
-        FetchNews(transcript); // Automatically starts searching
+        document.getElementById('searchInput').value = transcript;
+        FetchNews(transcript);
     };
 
     recognition.onend = () => {
@@ -33,50 +29,45 @@ function startVoiceSearch() {
     recognition.start();
 }
 
-// 2. Category Click Logic
 function FetchByCategory(category) {
-    const inputField = document.getElementById('searchInput');
-    if(inputField) inputField.value = category;
+    document.getElementById('searchInput').value = category;
     FetchNews(category);
 }
 
-// 3. News Fetching Engine (Interleaved Tamil & English)
+// 2. News Fetching logic (Fixed syntax from your screenshots)
 async function FetchNews(forcedQuery) {
-    const inputField = document.getElementById('searchInput');
+    const query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
-    const query = forcedQuery || (inputField && inputField.value ? inputField.value : 'Latest Technology');
 
-    grid.innerHTML = `<p class="text-center col-span-full text-blue-400 animate-pulse font-mono py-20">📡 SYNCING ${query.toUpperCase()} NEWS...</p>`;
+    grid.innerHTML = `<p class="text-center col-span-full text-blue-400 animate-pulse font-mono py-20">📡 SYNCING ${query.toUpperCase()}...</p>`;
 
     try {
         const tnRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query + ' Tamil Nadu')}&hl=ta-IN&gl=IN&ceid=IN:ta`;
         const engRss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
-        const rssToJsonBase = 'https://api.rss2json.com/v1/api.json?rss_url=';
+        const rssToJson = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
-        const [tnRes, engRes] = await Promise.all([
-            fetch(rssToJsonBase + encodeURIComponent(tnRss)).then(r => r.json()).catch(() => ({items:[]})),
-            fetch(rssToJsonBase + encodeURIComponent(engRss)).then(r => r.json()).catch(() => ({items:[]}))
+        const [tnData, engData] = await Promise.all([
+            fetch(rssToJson + encodeURIComponent(tnRss)).then(r => r.json()),
+            fetch(rssToJson + encodeURIComponent(engRss)).then(r => r.json())
         ]);
 
         let mixedNews = [];
-        const tnItems = tnRes.items || [];
-        const engItems = engRes.items || [];
+        const tItems = tnData.items || [];
+        const eItems = engData.items || [];
 
-        // Mix 10 news items
-        for(let i = 0; i < 10; i++) {
-            if (tnItems[i]) mixedNews.push(tnItems[i]);
-            if (engItems[i]) mixedNews.push(engItems[i]);
+        for(let i = 0; i < 12; i++) {
+            if (tItems[i]) mixedNews.push(tItems[i]);
+            if (eItems[i]) mixedNews.push(eItems[i]);
         }
 
         if (mixedNews.length > 0) displayNews(mixedNews, query);
-        else grid.innerHTML = `<p class="text-yellow-500 text-center col-span-full py-20">No news found. Try another keyword!</p>`;
+        else grid.innerHTML = `<p class="col-span-full text-center py-20">No News Found.</p>`;
         
-    } catch (error) {
-        grid.innerHTML = `<p class="text-red-500 text-center col-span-full py-20">⚠️ CONNECTION ERROR. CHECK API LIMIT.</p>`;
+    } catch (e) {
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">⚠️ API Error. Refresh!</p>`;
     }
 }
 
-// 4. News Card Display
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = '';
@@ -86,64 +77,51 @@ function displayNews(articles, searchQuery) {
         const randomId = Math.floor(Math.random() * 1000);
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(searchQuery)}?lock=${randomId}`;
 
-        const card = `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all duration-300 shadow-xl flex flex-col h-full">
-                <div class="relative overflow-hidden rounded-2xl mb-4 bg-gray-800 h-44">
-                    <img src="${imageUrl}" class="w-full h-full object-cover" alt="News Image">
+        grid.innerHTML += `
+            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col h-full shadow-lg">
+                <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800">
+                <h3 class="font-bold text-sm mb-4 line-clamp-2 flex-grow">${article.title}</h3>
+                <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
+                    <a href="${article.link}" target="_blank" class="text-blue-400">Link</a>
+                    <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500">WhatsApp</button>
                 </div>
-                <h3 class="font-bold text-[14px] mb-4 text-white line-clamp-2 flex-grow">${article.title}</h3>
-                <div class="flex justify-between items-center mb-4 px-1">
-                    <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] font-black uppercase hover:underline">Full Story</a>
-                    <button onclick="shareOnWhatsApp('${safeTitle}', '${article.link}')" class="text-green-500 text-[10px] font-black uppercase">WhatsApp</button>
-                </div>
-                <button onclick="getAISummary(this, '${safeTitle}')" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg">
+                <button onclick="getAISummary(this, '${safeTitle}')" class="w-full bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">
                     ✨ GET TAMIL AI SUMMARY
                 </button>
-            </div>
-        `;
-        grid.innerHTML += card;
+            </div>`;
     });
 }
 
-// 5. Gemini AI Tamil Summary + Voice Reader
+// 3. AI Tamil Summary + Voice Reader
 async function getAISummary(button, title) {
     const originalText = button.innerText;
     button.innerText = "🤖 THINKING...";
     button.disabled = true;
 
-    // Stop any existing speech
-    window.speechSynthesis.cancel();
+    window.speechSynthesis.cancel(); 
 
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Explain this news in 2 short lines in Tamil language: " + title }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Explain in 2 short lines in Tamil: " + title }] }] })
         });
         
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
 
-        // Voice Reader Logic
         const speech = new SpeechSynthesisUtterance(summary);
-        speech.lang = 'ta-IN'; // Tamil India
+        speech.lang = 'ta-IN';
         speech.rate = 0.9;
         window.speechSynthesis.speak(speech);
 
-        alert("🤖 TAMIL AI SUMMARY:\n\n" + summary);
-
+        alert("🤖 AI TAMIL:\n\n" + summary);
     } catch (e) {
-        alert("AI Limit Reached! Try again in 30 seconds.");
+        alert("AI Error or Busy!");
     } finally {
         button.innerText = originalText;
         button.disabled = false;
     }
 }
 
-function shareOnWhatsApp(title, url) {
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("🗞️ " + title + "\n\nLink: " + url)}`, '_blank');
-}
-
-// Initial News Load
 document.addEventListener('DOMContentLoaded', () => FetchNews());
