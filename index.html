@@ -1,72 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="app.webmanifest">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Reporter Pro</title>
-    <!-- Tailwind CDN Link -->
+    <link rel="manifest" href="app.webmanifest">
+    <title>AI News Reporter Pro - Nishanth KN</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
 </head>
 <body class="bg-gray-950 text-white font-sans min-h-screen">
-    
-    <!-- Navigation -->
-    <nav class="p-6 bg-black border-b border-blue-900/30 sticky top-0 z-50 backdrop-blur-md">
-    <div class="max-w-6xl mx-auto flex justify-between items-center px-4">
-        <h1 class="text-2xl font-black tracking-tighter text-blue-500 flex items-center gap-2">
-            🤖 AI NEWS REPORTER
-        </h1>
-        
-<div class="flex items-center gap-4 bg-gray-900/60 p-2 pr-6 rounded-full border border-gray-700 shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:scale-105 transition-transform duration-300">
-    <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png" 
-         class="w-16 h-16 rounded-full border-2 border-blue-500 object-cover shadow-lg"
-         onerror="this.src='https://ui-avatars.com/api/?name=Nishanth&background=007bff&color=fff'">
-    
-    <div class="text-xs text-right">
-        <p class="text-blue-400 font-medium tracking-widest uppercase mb-1" style="font-size: 0.65rem;">Developed by</p>
-        <p class="font-bold text-white text-base tracking-tight leading-none">NISHANTH KN</p>
-    </div>
-</div>
-    </div>
-    </nav>
-    
-    <!-- Search Section -->
-    <div class="p-6 max-w-4xl mx-auto mt-8">
-        <!-- Search Section -->
-<div class="p-6 max-w-4xl mx-auto mt-8">
-    <div class="flex gap-3 bg-gray-900 p-2 rounded-2xl border border-gray-800 focus-within:border-blue-500 transition-all shadow-2xl">
-        <input type="text" id="searchInput" placeholder="Search any topic (e.g. AI, Space, Cricket)..." 
-               class="flex-1 bg-transparent p-3 outline-none text-gray-200">
-        <!-- Inga dhaan 'F' capital-ah irukkanum -->
-        <button onclick="FetchNews()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all text-white">
-            Search
-        </button>
-    </div>
-</div>
-        <div class="flex flex-wrap justify-center gap-4 mb-8 px-6">
-    <button onclick="FetchByCategory('Technology')" class="px-6 py-2 bg-gray-900 text-blue-400 rounded-full border border-gray-800 hover:border-blue-500 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg">💻 Tech</button>
-    <button onclick="FetchByCategory('Sports')" class="px-6 py-2 bg-gray-900 text-green-400 rounded-full border border-gray-800 hover:border-green-500 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg">🏆 Sports</button>
-    <button onclick="FetchByCategory('Business')" class="px-6 py-2 bg-gray-900 text-yellow-400 rounded-full border border-gray-800 hover:border-yellow-500 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg">📊 Business</button>
-    <button onclick="FetchByCategory('Tamil Nadu')" class="px-6 py-2 bg-gray-900 text-red-400 rounded-full border border-gray-800 hover:border-red-500 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg">📍 Tamil Nadu</button>
-    <button onclick="FetchByCategory('Entertainment')" class="px-6 py-2 bg-gray-900 text-purple-400 rounded-full border border-gray-800 hover:border-purple-500 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg">🎬 Cinema</button>
-        </div>
-        
-      <!-- News Grid -->
-        <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-            <!-- News will be injected here by script.js -->
-            <div class="col-span-full text-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p class="text-gray-500">Booting AI Engine...</p>
+
+    <nav class="p-4 bg-black border-b border-blue-900/30 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-black tracking-tighter text-blue-500 flex items-center gap-2">
+                🤖 AI NEWS REPORTER
+            </h1>
+            <div class="flex items-center gap-3 bg-gray-900/50 p-1 rounded-full border border-gray-800">
+                <div class="text-[10px] pr-2 pl-3">
+                    <p class="font-bold uppercase text-blue-400 text-right">Developed by:</p>
+                    <p class="font-bold text-right">NISHANTH KN</p>
+                </div>
             </div>
+        </div>
+    </nav>
+
+    <div class="p-6 max-w-4xl mx-auto">
+        <div class="flex gap-2 bg-gray-900 p-2 rounded-2xl border border-gray-800 focus-within:border-blue-500 transition-all items-center shadow-2xl">
+            <input type="text" id="searchInput" placeholder="Search topics (AI, Cricket, Space)..." 
+                   class="flex-1 bg-transparent p-3 outline-none text-gray-200">
+            
+            <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-400 hover:text-blue-500 transition-all text-xl">
+                🎤
+            </button>
+
+            <button onclick="FetchNews()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">
+                Search
+            </button>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 mt-6">
+            <button onclick="FetchByCategory('Technology')" class="px-4 py-2 bg-gray-900 text-blue-400 rounded-full border border-gray-800 hover:border-blue-500 transition-all font-bold text-xs uppercase">💻 Tech</button>
+            <button onclick="FetchByCategory('Sports')" class="px-4 py-2 bg-gray-900 text-green-400 rounded-full border border-gray-800 hover:border-green-500 transition-all font-bold text-xs uppercase">🏆 Sports</button>
+            <button onclick="FetchByCategory('Business')" class="px-4 py-2 bg-gray-900 text-yellow-400 rounded-full border border-gray-800 hover:border-yellow-500 transition-all font-bold text-xs uppercase">💼 Business</button>
+            <button onclick="FetchByCategory('Tamil Nadu')" class="px-4 py-2 bg-gray-900 text-red-400 rounded-full border border-gray-800 hover:border-red-500 transition-all font-bold text-xs uppercase">📍 Local</button>
+            <button onclick="FetchByCategory('Cinema')" class="px-4 py-2 bg-gray-900 text-purple-400 rounded-full border border-gray-800 hover:border-purple-500 transition-all font-bold text-xs uppercase">🎬 Cinema</button>
         </div>
     </div>
 
-    <!-- Footer -->
+    <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
+        <div class="col-span-full text-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-gray-500 animate-pulse">Booting AI Engine...</p>
+        </div>
+    </div>
+
     <footer class="mt-20 p-10 border-t border-gray-900 text-center text-gray-600 text-sm">
         &copy; 2026 NISHANTH KN | AI-Powered News Interface
     </footer>
 
-    <!-- Linking your JavaScript -->
     <script src="script.js"></script>
+    <script>
+        // Progressive Web App Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => console.log("Service Worker optional"));
+        }
+    </script>
 </body>
 </html>
