@@ -124,17 +124,16 @@ async function getAISummary(button, title) {
     }
 }
 document.addEventListener('DOMContentLoaded', () => FetchNews());
-// Smart Search Data
+// 4. Smart Search Logic
 const trendingTopics = [
     "Tamil Nadu News", "TATA Stocks", "AI Innovations", "Machine Learning", 
     "IPL Updates", "Cinema News", "Education Policy", "Weather Today",
     "Space Research", "Stock Market India", "Startup India", "Python Programming"
 ];
 
-// Show suggestions as user types
 function showSuggestions(val) {
     const box = document.getElementById('suggestionBox');
-    if (!val || val.length < 1) {
+    if (!val || val.trim().length < 1) {
         box.classList.add('hidden');
         return;
     }
@@ -146,7 +145,7 @@ function showSuggestions(val) {
     if (filtered.length > 0) {
         box.classList.remove('hidden');
         box.innerHTML = filtered.map(item => `
-            <div onclick="selectSuggestion('${item}')" class="p-4 hover:bg-blue-600/20 cursor-pointer border-b border-gray-800 last:border-0 text-sm font-medium text-gray-300 flex items-center gap-3">
+            <div onclick="selectSuggestion('${item}')" class="p-4 hover:bg-blue-600/30 cursor-pointer border-b border-gray-800 last:border-0 text-sm font-medium text-gray-300 flex items-center gap-3">
                 <span class="text-blue-500">🔍</span> ${item}
             </div>
         `).join('');
@@ -155,16 +154,13 @@ function showSuggestions(val) {
     }
 }
 
-// When a user clicks a suggestion
 function selectSuggestion(val) {
-    const input = document.getElementById('searchInput');
-    const box = document.getElementById('suggestionBox');
-    input.value = val;
-    box.classList.add('hidden');
-    FetchNews(val); // Directly search
+    document.getElementById('searchInput').value = val;
+    document.getElementById('suggestionBox').classList.add('hidden');
+    FetchNews(val); 
 }
 
-// Hide box if user clicks anywhere else
+// Hide box when clicking outside
 document.addEventListener('click', (e) => {
     const box = document.getElementById('suggestionBox');
     const input = document.getElementById('searchInput');
@@ -172,4 +168,3 @@ document.addEventListener('click', (e) => {
         box.classList.add('hidden');
     }
 });
-
