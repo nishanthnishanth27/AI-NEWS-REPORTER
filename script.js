@@ -93,35 +93,44 @@ function displayNews(articles, searchQuery) {
 }
 
 // 3. AI Tamil Summary + Voice Reader
-async function getAISummary(button, title) {
+async function getAiSummary(button, title) {
     const originalText = button.innerText;
-    button.innerText = "🤖 THINKING...";
+    button.innerText = "🤖 AI ANALYZING...";
     button.disabled = true;
 
-    window.speechSynthesis.cancel(); 
-
     try {
+        // Multi-language prompt engineering (Pythonic Logic)
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Explain in 2 short lines in Tamil: " + title }] }] })
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: `Act as a Data Scientist. Analyze this news title: "${title}". 
+                    1. Provide a 2-line summary in Tamil.
+                    2. Categorize the sentiment as [POSITIVE], [NEGATIVE], or [NEUTRAL].` }]
+                }]
+            })
         });
-        
-        const data = await response.json();
-        const summary = data.candidates[0].content.parts[0].text;
 
-        const speech = new SpeechSynthesisUtterance(summary);
+        const data = await response.json();
+        const fullResponse = data.candidates[0].content.parts[0].text;
+
+        // Displaying with mass effect
+        alert(`🚀 AI INSIGHTS:\n\n${fullResponse}`);
+        
+        // Voice reader still works
+        const speech = new SpeechSynthesisUtterance(fullResponse);
         speech.lang = 'ta-IN';
-        speech.rate = 0.9;
         window.speechSynthesis.speak(speech);
 
-        alert("🤖 AI TAMIL:\n\n" + summary);
     } catch (e) {
-        alert("AI Error or Busy!");
+        alert("AI Engine Busy!");
     } finally {
         button.innerText = originalText;
         button.disabled = false;
     }
+}
+
 }
 document.addEventListener('DOMContentLoaded', () => FetchNews());
 // 4. Smart Search Logic
