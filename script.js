@@ -2,9 +2,13 @@ const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
 
 // 1. Core Fetching with Fresh Data Logic
 async function FetchNews(forcedQuery) {
-    const query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
+    // 1. Define the query first
+    let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
-    
+   // 2. Then check if it is 'Local'
+    if (query === 'Local') {
+        query = 'site:tamil.oneindia.com'; 
+    }
     // Initializing state with spinner
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
@@ -50,8 +54,9 @@ function displayNews(articles, searchQuery) {
     articles.forEach((article) => {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         // Format date to local time
-        const timeStr = new Date(article.pubDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const dateStr = new Date(article.pubDate).toLocaleDateString();
+const keywords = safeTitle.split(' ').slice(0, 2).join(','); 
+const randomId = Math.floor(Math.random() * 8000);
+const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
         
 const keywords = safeTitle.split(' ').slice(0, 2).join(','); 
 const randomId = Math.floor(Math.random() * 8000);
