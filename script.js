@@ -52,7 +52,7 @@ function displayNews(articles, searchQuery) {
         // Format date to local time
         const timeStr = new Date(article.pubDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = new Date(article.pubDate).toLocaleDateString();
-        // Title-la irunthu first 2 keywords eduthu related image fetch pannum
+        
 const keywords = safeTitle.split(' ').slice(0, 2).join(','); 
 const randomId = Math.floor(Math.random() * 8000);
 const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
