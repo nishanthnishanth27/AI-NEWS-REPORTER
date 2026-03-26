@@ -52,10 +52,10 @@ function displayNews(articles, searchQuery) {
         // Format date to local time
         const timeStr = new Date(article.pubDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = new Date(article.pubDate).toLocaleDateString();
-        
-        const randomId = Math.floor(Math.random() * 9000);
-        const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(searchQuery)}?lock=${randomId}`;
-
+        // Title-la irunthu first 2 keywords eduthu related image fetch pannum
+const keywords = safeTitle.split(' ').slice(0, 2).join(','); 
+const randomId = Math.floor(Math.random() * 8000);
+const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
         grid.innerHTML += `
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col shadow-2xl relative overflow-hidden group">
                 <div class="absolute top-4 right-4 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">LATEST</div>
