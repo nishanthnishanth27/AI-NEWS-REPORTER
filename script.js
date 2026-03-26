@@ -134,3 +134,14 @@ function startVoiceSearch() {
     rec.onend = () => { micBtn.innerText = "🎤"; micBtn.classList.remove("animate-pulse"); };
     rec.start();
 }
+// Splash Screen Timeout Logic
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
+    setTimeout(() => {
+        splash.style.opacity = '0'; // Smooth fade out
+        setTimeout(() => {
+            splash.style.display = 'none'; // Completely remove
+        }, 1000);
+    }, 2500); // 2.5 seconds delay
+});
+
