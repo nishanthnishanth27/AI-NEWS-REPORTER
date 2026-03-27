@@ -93,17 +93,29 @@ async function getAiSummary(button, title) {
 
 // 4. SQL SAVE FUNCTION
 async function saveToSQL(title, link, pubDate) {
+    // Replace 'localhost' with your laptop IP if testing from phone
+    const serverUrl = 'http://localhost:5000/save'; 
+
     try {
-        const response = await fetch('http://localhost:5000/save', {
+        const response = await fetch(serverUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: title, link: link, pub_date: pubDate })
+            body: JSON.stringify({ 
+                title: title, 
+                link: link, 
+                pub_date: pubDate 
+            })
         });
         const result = await response.json();
-        alert(result.message);
-    } catch (e) { alert("run on the laptop"); }
+        if (response.ok) {
+            alert("🚀 SUCCESS: News saved to SQL Database!");
+        } else {
+            alert("ℹ️ INFO: " + result.message);
+        }
+    } catch (e) {
+        alert("❌ ERROR: Connection Failed! Ensure 'app.py' is running on your laptop.");
+    }
 }
-
 // 5. SPLASH SCREEN FIX 
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
