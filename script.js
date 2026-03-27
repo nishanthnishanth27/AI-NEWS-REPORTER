@@ -45,13 +45,10 @@ function displayNews(articles, searchQuery) {
 
     articles.forEach((article) => {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
-        
-        // Date and Time Formatting
         const dateObj = new Date(article.pubDate);
         const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
         
-        // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
         const randomId = Math.floor(Math.random() * 8000);
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
@@ -67,12 +64,23 @@ function displayNews(articles, searchQuery) {
                 </div>
 
                 <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
+                
                 <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
                     <a href="${article.link}" target="_blank" class="text-blue-400 underline decoration-blue-900">VIEW SOURCE</a>
                     <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500 font-bold">SHARE</button>
                 </div>
-                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl text-[10px] font-black tracking-widest transition-all shadow-lg active:scale-95">
+
+                <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" 
+                        class="w-full bg-yellow-600 hover:bg-yellow-700 py-3 rounded-2xl text-[10px] font-black mb-2 transition-all shadow-md active:scale-95">
+                    ⭐ SAVE TO SQL DATABASE
+                </button>
+
+                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg active:scale-95">
                     ✨ GET AI TAMIL SUMMARY
+                </button>
+            </div>`;
+    });
+}
                 </button>
             </div>`;
     });
@@ -143,3 +151,31 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
+// --- SQL DATABASE CONNECTION LOGIC ---
+async function saveToSQL(title, link, pubDate) {
+    const serverUrl = 'http://localhost:5000/save';
+
+    try {
+        const response = await fetch(serverUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                title: title, 
+                link: link, 
+                pub_date: pubDate 
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("🚀 SUCCESS: SQL Database-la save aachchu!");
+        } else {
+            alert("ℹ️ INFO: " + result.message);
+        }
+    } catch (e) {
+        console.error("Connection Error:", e);
+        alert("❌ ERROR: Laptop-la Python server (app.py) run aagala!");
+    }
+}
+
