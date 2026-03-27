@@ -32,9 +32,10 @@ async function FetchNews(forcedQuery) {
     }
 }
 
-// 2. Display Function with SAVE TO SQL Option
+// 2. Display Function with SQL Button
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
+    if (!grid) return;
     grid.innerHTML = ''; 
 
     articles.forEach((article) => {
@@ -56,24 +57,19 @@ function displayNews(articles, searchQuery) {
 
                 <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
                 
-                <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
-                    <a href="${article.link}" target="_blank" class="text-blue-400 underline">VIEW SOURCE</a>
-                    <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500">SHARE</button>
+                <div class="flex justify-between items-center mb-4 text-[10px] font-black">
+                    <a href="${article.link}" target="_blank" class="text-blue-400 underline">SOURCE</a>
+                    <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" class="text-yellow-500 font-bold border border-yellow-500 px-2 py-1 rounded-lg">⭐ SAVE SQL</button>
                 </div>
 
-                <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" 
-                        class="w-full bg-yellow-600 hover:bg-yellow-700 py-3 rounded-2xl text-[10px] font-black mb-2 transition-all shadow-md active:scale-95">
-                    ⭐ SAVE TO SQL DATABASE
-                </button>
-
-                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg active:scale-95">
+                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg">
                     ✨ GET AI TAMIL SUMMARY
                 </button>
             </div>`;
     });
 }
 
-// 3. AI Insights
+// 3. AI Insights Logic
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerText = "🤖 ANALYZING...";
@@ -95,7 +91,7 @@ async function getAiSummary(button, title) {
     finally { button.innerHTML = originalText; button.disabled = false; }
 }
 
-// 4. SQL SAVE FUNCTION (Connecting to your app.py)
+// 4. SQL SAVE FUNCTION
 async function saveToSQL(title, link, pubDate) {
     try {
         const response = await fetch('http://localhost:5000/save', {
@@ -105,43 +101,48 @@ async function saveToSQL(title, link, pubDate) {
         });
         const result = await response.json();
         alert(result.message);
-    } catch (e) {
-        alert("SQL Server (app.py) run aagala! Laptop-la Python server-ah start pannunga.");
-    }
+    } catch (e) { alert("Laptop-la app.py run pannunga!"); }
 }
 
-// 5. Voice Search
+// 5. SPLASH SCREEN FIX (Kadaisi line-la mukkuyama irukanum)
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        console.log("Splash screen found, starting timer...");
+        setTimeout(() => {
+            splash.style.transition = 'opacity 0.6s ease';
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                console.log("Splash hidden, fetching news...");
+                FetchNews(); 
+            }, 600);
+        }, 2000); 
+    } else {
+        console.log("Splash screen element not found!");
+        FetchNews();
+    }
+});
+
+// Category Fetch
+function FetchByCategory(category) {
+    document.getElementById('searchInput').value = category;
+    FetchNews(category);
+}
+
+// Voice Search
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
     const rec = new SpeechRecognition();
     rec.lang = 'en-IN';
-    rec.onstart = () => { micBtn.innerHTML = "🔴"; micBtn.classList.add("animate-pulse"); };
+    rec.onstart = () => { micBtn.innerHTML = "🔴"; };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { micBtn.innerHTML = "🎤"; micBtn.classList.remove("animate-pulse"); };
+    rec.onend = () => { micBtn.innerHTML = "🎤"; };
     rec.start();
-}
-
-// 6. Splash Screen & Init Fix
-window.addEventListener('load', () => {
-    const splash = document.getElementById('splash-screen');
-    if(splash) {
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-                FetchNews(); 
-            }, 600);
-        }, 2000); 
-    }
-});
-
-function FetchByCategory(category) {
-    document.getElementById('searchInput').value = category;
-    FetchNews(category);
 }
