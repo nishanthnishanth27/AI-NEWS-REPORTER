@@ -101,10 +101,10 @@ async function saveToSQL(title, link, pubDate) {
         });
         const result = await response.json();
         alert(result.message);
-    } catch (e) { alert("Laptop-la app.py run pannunga!"); }
+    } catch (e) { alert("run on the laptop"); }
 }
 
-// 5. SPLASH SCREEN FIX (Kadaisi line-la mukkuyama irukanum)
+// 5. SPLASH SCREEN FIX 
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
