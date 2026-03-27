@@ -1,20 +1,16 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
 
-// 1. Core Fetching Function
+// 1. Fetch News Function
 async function FetchNews(forcedQuery) {
-    // FIX: Variable definition must come first
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
 
-    // Instagram/Website Sync for 'Local' Category
-    if (query === 'Local') {
-        query = 'site:tamil.oneindia.com'; 
-    }
+    if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
 
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-            <p class="text-blue-400 font-bold animate-pulse uppercase tracking-widest">📡 AI SYNCING: ${query.toUpperCase()}</p>
+            <p class="text-blue-400 font-bold animate-pulse">📡 AI SYNCING: ${query.toUpperCase()}</p>
         </div>`;
 
     try {
@@ -26,19 +22,17 @@ async function FetchNews(forcedQuery) {
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
-            // Sort to show newest news first
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 16), query);
         } else {
-            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found for "${query}".</p>`;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found.</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold">Network Busy. Retrying...</p>`;
-        setTimeout(() => FetchNews(query), 5000);
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Retrying...</p>`;
     }
 }
 
-// 2. Display Function with Date & Time Fix
+// 2. Display Function with SAVE TO SQL Option
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = ''; 
@@ -55,19 +49,16 @@ function displayNews(articles, searchQuery) {
 
         grid.innerHTML += `
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
-                <div class="absolute top-4 right-4 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">LATEST</div>
                 <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
                      onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
                 
-                <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">
-                    📅 ${dateStr}  |  🕒 ${timeStr}
-                </div>
+                <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">📅 ${dateStr} | 🕒 ${timeStr}</div>
 
                 <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
                 
                 <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
-                    <a href="${article.link}" target="_blank" class="text-blue-400 underline decoration-blue-900">VIEW SOURCE</a>
-                    <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500 font-bold">SHARE</button>
+                    <a href="${article.link}" target="_blank" class="text-blue-400 underline">VIEW SOURCE</a>
+                    <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500">SHARE</button>
                 </div>
 
                 <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" 
@@ -77,10 +68,6 @@ function displayNews(articles, searchQuery) {
 
                 <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg active:scale-95">
                     ✨ GET AI TAMIL SUMMARY
-                </button>
-            </div>`;
-    });
-}
                 </button>
             </div>`;
     });
@@ -96,7 +83,7 @@ async function getAiSummary(button, title) {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Explain in 2 lines in Tamil: "${title}"` }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize in 2 lines Tamil: "${title}"` }] }] })
         });
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
@@ -104,78 +91,57 @@ async function getAiSummary(button, title) {
         speech.lang = 'ta-IN';
         window.speechSynthesis.speak(speech);
         alert(`🚀 AI REPORT:\n\n${summary}`);
-    } catch (e) { alert("AI Busy! Try again."); }
+    } catch (e) { alert("AI Busy!"); }
     finally { button.innerHTML = originalText; button.disabled = false; }
 }
 
-// 4. Voice Search Functionality
+// 4. SQL SAVE FUNCTION (Connecting to your app.py)
+async function saveToSQL(title, link, pubDate) {
+    try {
+        const response = await fetch('http://localhost:5000/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, link: link, pub_date: pubDate })
+        });
+        const result = await response.json();
+        alert(result.message);
+    } catch (e) {
+        alert("SQL Server (app.py) run aagala! Laptop-la Python server-ah start pannunga.");
+    }
+}
+
+// 5. Voice Search
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("Voice search not supported in this browser.");
-        return;
-    }
+    if (!SpeechRecognition) return;
     const rec = new SpeechRecognition();
     rec.lang = 'en-IN';
-    rec.onstart = () => { 
-        micBtn.innerHTML = "🔴"; 
-        micBtn.classList.add("animate-pulse"); 
-    };
+    rec.onstart = () => { micBtn.innerHTML = "🔴"; micBtn.classList.add("animate-pulse"); };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { 
-        micBtn.innerHTML = "🎤"; 
-        micBtn.classList.remove("animate-pulse"); 
-    };
+    rec.onend = () => { micBtn.innerHTML = "🎤"; micBtn.classList.remove("animate-pulse"); };
     rec.start();
 }
 
-// 5. Initialization and Splash Control
-document.addEventListener('DOMContentLoaded', () => FetchNews());
-
-function FetchByCategory(category) {
-    document.getElementById('searchInput').value = category;
-    FetchNews(category);
-}
-
+// 6. Splash Screen & Init Fix
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     if(splash) {
         setTimeout(() => {
             splash.style.opacity = '0';
-            setTimeout(() => splash.style.display = 'none', 1000);
-        }, 2500);
+            setTimeout(() => {
+                splash.style.display = 'none';
+                FetchNews(); 
+            }, 600);
+        }, 2000); 
     }
 });
-// --- SQL DATABASE CONNECTION LOGIC ---
-async function saveToSQL(title, link, pubDate) {
-    const serverUrl = 'http://localhost:5000/save';
 
-    try {
-        const response = await fetch(serverUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                title: title, 
-                link: link, 
-                pub_date: pubDate 
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert("🚀 SUCCESS: SQL Database-la save aachchu!");
-        } else {
-            alert("ℹ️ INFO: " + result.message);
-        }
-    } catch (e) {
-        console.error("Connection Error:", e);
-        alert("❌ ERROR: Laptop-la Python server (app.py) run aagala!");
-    }
+function FetchByCategory(category) {
+    document.getElementById('searchInput').value = category;
+    FetchNews(category);
 }
-
