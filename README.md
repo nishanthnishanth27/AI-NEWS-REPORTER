@@ -14,12 +14,6 @@
 ## 🚀 **Introduction**
 
 The **AI News Reporter** is an advanced web application that leverages modern AI technologies to fetch the latest news and provide instant summaries in Tamil. It acts as a digital news anchor, specifically designed to help Tamil-speaking users stay updated with global and technical insights quickly and efficiently.
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/pce.png" alt="PCE logo" width="100"/>
-  <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/ds.png" alt="DS logo" width="100"/>
-</p>
-
 ## 💡 **Key Features**
 
 ### **1. AI-Powered Tamil Summarization**
