@@ -1,16 +1,20 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
+const EMAILJS_PUBLIC_KEY = 'ZMkclx4cHgNZXN66H'; //
 
-// 1. Fetch News Function
+// 1. Fetch News Function with Email Tracking
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
+
+    // --- TRACKING: Send email alert to you when someone searches ---
+    sendSearchAlert(query);
 
     if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
 
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-            <p class="text-blue-400 font-bold animate-pulse">📡 AI SYNCING: ${query.toUpperCase()}</p>
+            <p class="text-blue-400 font-bold animate-pulse uppercase tracking-widest">📡 AI SYNCING: ${query.toUpperCase()}</p>
         </div>`;
 
     try {
@@ -28,11 +32,25 @@ async function FetchNews(forcedQuery) {
             grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found.</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Retrying...</p>`;
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold">Network Busy. Retrying...</p>`;
     }
 }
 
-// 2. Display Function with SQL Button
+// 2. EmailJS Function (Tracks user activity)
+function sendSearchAlert(searchQuery) {
+    const templateParams = {
+        user_search: searchQuery,
+        time_stamp: new Date().toLocaleString(),
+        to_email: 'legendnishanth52@gmail.com' //
+    };
+
+    // 'service_default' use pannalaam illa unga Dashboard Service ID kudunga
+    emailjs.send('service_default', 'template_sidfav5', templateParams, EMAILJS_PUBLIC_KEY)
+        .then(() => { console.log('Tracking email sent!'); })
+        .catch((err) => { console.error('Tracking failed:', err); });
+}
+
+// 3. Display Function with SQL Button
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     if (!grid) return;
@@ -57,19 +75,23 @@ function displayNews(articles, searchQuery) {
 
                 <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
                 
-                <div class="flex justify-between items-center mb-4 text-[10px] font-black">
+                <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
                     <a href="${article.link}" target="_blank" class="text-blue-400 underline">SOURCE</a>
-                    <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" class="text-yellow-500 font-bold border border-yellow-500 px-2 py-1 rounded-lg">⭐ SAVE SQL</button>
+                    <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" 
+                            class="text-yellow-500 font-bold border border-yellow-500 px-2 py-1 rounded-lg hover:bg-yellow-500 hover:text-black transition-all">
+                        ⭐ SAVE SQL
+                    </button>
                 </div>
 
-                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg">
+                <button onclick="getAiSummary(this, '${safeTitle}')" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg active:scale-95">
                     ✨ GET AI TAMIL SUMMARY
                 </button>
             </div>`;
     });
 }
 
-// 3. AI Insights Logic
+// 4. AI Insights Logic (Gemini API)
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerText = "🤖 ANALYZING...";
@@ -87,74 +109,57 @@ async function getAiSummary(button, title) {
         speech.lang = 'ta-IN';
         window.speechSynthesis.speak(speech);
         alert(`🚀 AI REPORT:\n\n${summary}`);
-    } catch (e) { alert("AI Busy!"); }
+    } catch (e) { alert("AI Busy! Please try again."); }
     finally { button.innerHTML = originalText; button.disabled = false; }
 }
 
-// 4. SQL SAVE FUNCTION
+// 5. SQL Save Logic (Backend Connection)
 async function saveToSQL(title, link, pubDate) {
-    // Replace 'localhost' with your laptop IP if testing from phone
     const serverUrl = 'http://localhost:5000/save'; 
-
     try {
         const response = await fetch(serverUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                title: title, 
-                link: link, 
-                pub_date: pubDate 
-            })
+            body: JSON.stringify({ title: title, link: link, pub_date: pubDate })
         });
         const result = await response.json();
-        if (response.ok) {
-            alert("🚀 SUCCESS: News saved to SQL Database!");
-        } else {
-            alert("ℹ️ INFO: " + result.message);
-        }
+        if (response.ok) { alert("🚀 SUCCESS: News saved to SQL Database!"); }
+        else { alert("ℹ️ INFO: " + result.message); }
     } catch (e) {
-        alert("❌ ERROR: Connection Failed! Ensure 'app.py' is running on your laptop.");
+        alert("❌ ERROR: Backend Server (app.py) is not running on your laptop!");
     }
 }
-// 5. SPLASH SCREEN FIX 
+
+// 6. Splash Screen Fix
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
-        console.log("Splash screen found, starting timer...");
         setTimeout(() => {
             splash.style.transition = 'opacity 0.6s ease';
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
-                console.log("Splash hidden, fetching news...");
                 FetchNews(); 
             }, 600);
         }, 2000); 
-    } else {
-        console.log("Splash screen element not found!");
-        FetchNews();
-    }
+    } else { FetchNews(); }
 });
 
-// Category Fetch
-function FetchByCategory(category) {
-    document.getElementById('searchInput').value = category;
-    FetchNews(category);
-}
+// Category & Voice Search Helpers
+function FetchByCategory(cat) { document.getElementById('searchInput').value = cat; FetchNews(cat); }
 
-// Voice Search
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     if (!SpeechRecognition) return;
     const rec = new SpeechRecognition();
     rec.lang = 'en-IN';
-    rec.onstart = () => { micBtn.innerHTML = "🔴"; };
+    rec.onstart = () => { micBtn.innerHTML = "🔴"; micBtn.classList.add("animate-pulse"); };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { micBtn.innerHTML = "🎤"; };
+    rec.onend = () => { micBtn.innerHTML = "🎤"; micBtn.classList.remove("animate-pulse"); };
     rec.start();
 }
