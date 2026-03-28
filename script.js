@@ -1,12 +1,26 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
-const EMAILJS_PUBLIC_KEY = 'ZMkclx4cHgNZXN66H'; //
+const EMAILJS_PUBLIC_KEY = 'ZMkclx4cHgNZXN66H'; // Unga Public Key
 
-// 1. Fetch News Function with Email Tracking
+// --- LOGIN ALERT FUNCTION ---
+// App open aagum pothu unga mail-ku alert anuppum
+function sendLoginAlert() {
+    const params = {
+        user_event: "User Logged In / App Opened",
+        time_stamp: new Date().toLocaleString(),
+        to_email: 'legendnishanth52@gmail.com' // Unga mail
+    };
+
+    emailjs.send('service_default', 'template_sidfav5', params, EMAILJS_PUBLIC_KEY)
+        .then(() => { console.log('Login alert sent to Nishanth!'); })
+        .catch((err) => { console.error('Alert failed:', err); });
+}
+
+// 1. Fetch News Function with Search Tracking
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
 
-    // --- TRACKING: Send email alert to you when someone searches ---
+    // Tracking: Search pannum pothum alert varum
     sendSearchAlert(query);
 
     if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
@@ -32,23 +46,21 @@ async function FetchNews(forcedQuery) {
             grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found.</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold">Network Busy. Retrying...</p>`;
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Retrying...</p>`;
     }
 }
 
-// 2. EmailJS Function (Tracks user activity)
+// 2. EmailJS Function for Tracking
 function sendSearchAlert(searchQuery) {
     const templateParams = {
         user_search: searchQuery,
         time_stamp: new Date().toLocaleString(),
-        to_email: 'legendnishanth52@gmail.com' //
+        to_email: 'legendnishanth52@gmail.com'
     };
-    emailjs.send('service_default', 'template_sidfav5', templateParams, EMAILJS_PUBLIC_KEY)
-        .then(() => { console.log('Tracking email sent!'); })
-        .catch((err) => { console.error('Tracking failed:', err); });
+    emailjs.send('service_default', 'template_sidfav5', templateParams, EMAILJS_PUBLIC_KEY);
 }
 
-// 3. Display Function with SQL Button
+// 3. Display Function (Includes SQL Save and AI Summary)
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     if (!grid) return;
@@ -68,11 +80,8 @@ function displayNews(articles, searchQuery) {
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
                 <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
                      onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
-                
                 <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">📅 ${dateStr} | 🕒 ${timeStr}</div>
-
                 <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
-                
                 <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
                     <a href="${article.link}" target="_blank" class="text-blue-400 underline">SOURCE</a>
                     <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" 
@@ -80,7 +89,6 @@ function displayNews(articles, searchQuery) {
                         ⭐ SAVE SQL
                     </button>
                 </div>
-
                 <button onclick="getAiSummary(this, '${safeTitle}')" 
                         class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all shadow-lg active:scale-95">
                     ✨ GET AI TAMIL SUMMARY
@@ -89,12 +97,11 @@ function displayNews(articles, searchQuery) {
     });
 }
 
-// 4. AI Insights Logic (Gemini API)
+// 4. AI Summary (Gemini API)
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerText = "🤖 ANALYZING...";
     button.disabled = true;
-    window.speechSynthesis.cancel();
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
@@ -103,33 +110,29 @@ async function getAiSummary(button, title) {
         });
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
-        const speech = new SpeechSynthesisUtterance(summary);
-        speech.lang = 'ta-IN';
-        window.speechSynthesis.speak(speech);
         alert(`🚀 AI REPORT:\n\n${summary}`);
-    } catch (e) { alert("AI Busy! Please try again."); }
+    } catch (e) { alert("AI Busy!"); }
     finally { button.innerHTML = originalText; button.disabled = false; }
 }
 
-// 5. SQL Save Logic (Backend Connection)
+// 5. SQL Save Function (Backend)
 async function saveToSQL(title, link, pubDate) {
-    const serverUrl = 'http://localhost:5000/save'; 
     try {
-        const response = await fetch(serverUrl, {
+        const response = await fetch('http://localhost:5000/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: title, link: link, pub_date: pubDate })
         });
         const result = await response.json();
-        if (response.ok) { alert("🚀 SUCCESS: News saved to SQL Database!"); }
-        else { alert("ℹ️ INFO: " + result.message); }
-    } catch (e) {
-        alert("❌ ERROR: Backend Server (app.py) is not running on your laptop!");
-    }
+        alert(result.message);
+    } catch (e) { alert("ERROR: SQL Backend run aagala!"); }
 }
 
-// 6. Splash Screen Fix
+// 6. Splash Screen and Login Trigger
 window.addEventListener('load', () => {
+    // TRIGGER LOGIN MAIL
+    sendLoginAlert();
+
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
@@ -143,21 +146,17 @@ window.addEventListener('load', () => {
     } else { FetchNews(); }
 });
 
-// Category & Voice Search Helpers
+// Category & Voice Search
 function FetchByCategory(cat) { document.getElementById('searchInput').value = cat; FetchNews(cat); }
 
 function startVoiceSearch() {
-    const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     if (!SpeechRecognition) return;
     const rec = new SpeechRecognition();
-    rec.lang = 'en-IN';
-    rec.onstart = () => { micBtn.innerHTML = "🔴"; micBtn.classList.add("animate-pulse"); };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { micBtn.innerHTML = "🎤"; micBtn.classList.remove("animate-pulse"); };
     rec.start();
 }
