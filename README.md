@@ -4,7 +4,9 @@
   <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png" alt="AI News Reporter Tamil" width="200"/>
 </p>
 
-### **Developed by: NISHANTH KN** **Institution:** Paavai College of Engineering (PCE) | **Department:** AI & DS  
+### **Developed by: NISHANTH KN** 
+**Institution:** Paavai College of Engineering (PCE) 
+**Department:** AI & DS  
 **Year:** 2026
 
 ---
