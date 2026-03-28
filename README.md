@@ -43,4 +43,4 @@ A custom **Splash Screen** loading logic ensures that the AI engine initializes 
 
 * **Frontend:** HTML5, CSS3 (Tailwind CSS Framework), JavaScript
 * **AI Engine:** Google Gemini 1.5 Flash API
-* 
+  
