@@ -8,6 +8,7 @@
 **Institution:** Paavai College of Engineering (PCE) 
 **Department:** AI & DS  
 **Year:** 2026
+<a href="https://ibb.co/C5dJtP3D"><img src="https://i.ibb.co/MDT8hBxQ/2-PEC-1.png" alt="2-PEC-1" border="0"></a>
 
 ---
 
