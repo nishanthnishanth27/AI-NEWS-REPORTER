@@ -43,8 +43,6 @@ function sendSearchAlert(searchQuery) {
         time_stamp: new Date().toLocaleString(),
         to_email: 'legendnishanth52@gmail.com' //
     };
-
-    // 'service_default' use pannalaam illa unga Dashboard Service ID kudunga
     emailjs.send('service_default', 'template_sidfav5', templateParams, EMAILJS_PUBLIC_KEY)
         .then(() => { console.log('Tracking email sent!'); })
         .catch((err) => { console.error('Tracking failed:', err); });
