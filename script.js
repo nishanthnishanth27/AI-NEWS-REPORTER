@@ -47,8 +47,10 @@ function displayNews(articles, searchQuery) {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         
         // Date and Time Formatting
-const relativeTime = getRelativeTime(article.pubDate);
-const dateStr = new Date(article.pubDate).toLocaleDateString([], { day: 'numeric', month: 'short' });
+        const dateObj = new Date(article.pubDate);
+        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
+        
         // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
         const randomId = Math.floor(Math.random() * 8000);
@@ -144,19 +146,3 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
-function getRelativeTime(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    if (diffInSeconds < 60) return 'Just now';
-    
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays}d ago`;
-}
