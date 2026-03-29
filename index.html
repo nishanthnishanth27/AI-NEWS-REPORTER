@@ -118,10 +118,9 @@
                     <div class="bg-gray-900 border border-gray-800 p-5 rounded-[32px] hover:border-blue-500 transition-all flex flex-col group shadow-xl">
                         <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
                              onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
-                        
-                        <div class="text-[9px] text-gray-500 font-bold mb-2 uppercase">📅 ${dateStr} | 🕒 ${timeStr}</div>
-                        <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
-                        
+                       <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">
+                       📅 ${dateStr} | 🕒 ${relativeTime}
+                   </div>
                         <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
                             <a href="${article.link}" target="_blank" class="text-blue-400 underline decoration-blue-900">VIEW SOURCE</a>
                             <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500 font-bold">SHARE</button>
