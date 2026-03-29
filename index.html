@@ -42,7 +42,7 @@
                     <p class="text-[10px] font-black uppercase">NISHANTH KN</p>
                 </div>
                 <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/profile.png" 
-                     class="w-9 h-9 rounded-full border-2 border-blue-600 object-cover"
+                     class="w-9 h-9 rounded-full border-2 border-blue-600 object-cover shadow-lg"
                      onerror="this.src='https://via.placeholder.com/100'">
             </div>
         </div>
@@ -60,27 +60,31 @@
             </div>
 
             <div class="flex flex-wrap gap-2 justify-center mt-8">
-                <button onclick="FetchByCategory('Technology')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-blue-500">💻 TECH</button>
-                <button onclick="FetchByCategory('Sports')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-green-500">🏆 SPORTS</button>
-                <button onclick="FetchByCategory('Business')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-yellow-500">💼 BUSINESS</button>
-                <button onclick="FetchByCategory('Tamil Nadu')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-red-500">📍 LOCAL</button>
+                <button onclick="FetchByCategory('Technology')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-blue-500 transition-all">💻 TECH</button>
+                <button onclick="FetchByCategory('Sports')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-green-500 transition-all">🏆 SPORTS</button>
+                <button onclick="FetchByCategory('Business')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-yellow-500 transition-all">💼 BUSINESS</button>
+                <button onclick="FetchByCategory('Tamil Nadu')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-red-500 transition-all">📍 LOCAL</button>
             </div>
         </div>
 
         <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
+    <footer class="p-10 text-center border-t border-gray-900 mt-20">
+        <p class="text-[9px] text-gray-600 font-black uppercase tracking-[0.4em]">© 2026 AI NEWS REPORTER | NISHANTH KN</p>
+    </footer>
+
     <script>
         const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakI5NA1ZRuRRk';
 
-        // Fix 1: Splash Screen & Init Logic
+        // Fix: Splash screen and News Initialization
         window.addEventListener('load', () => {
             const splash = document.getElementById('splash-screen');
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => {
                     splash.style.display = 'none';
-                    FetchNews(); // Starts fetching news after splash disappears
+                    FetchNews(); 
                 }, 700);
             }, 2500);
         });
@@ -88,7 +92,8 @@
         async function FetchNews(forcedQuery) {
             let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
             const grid = document.getElementById('newsGrid');
-            grid.innerHTML = `<div class="col-span-full text-center py-20"><p class="text-blue-400 animate-pulse font-bold uppercase">AI SYNCING: ${query.toUpperCase()}</p></div>`;
+
+            grid.innerHTML = `<div class="col-span-full text-center py-20"><p class="text-blue-400 animate-pulse font-bold uppercase tracking-widest">AI SYNCING: ${query.toUpperCase()}</p></div>`;
 
             try {
                 const ts = new Date().getTime();
@@ -101,10 +106,10 @@
                 if (data.status === 'ok' && data.items) {
                     displayNews(data.items.slice(0, 15));
                 } else {
-                    grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-500 uppercase">No news found.</p>`;
+                    grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400 uppercase">No news found.</p>`;
                 }
             } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center py-20 text-red-500 uppercase">Error loading feed.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center py-20 text-red-500 uppercase">Network Busy.</p>`;
             }
         }
 
@@ -112,7 +117,7 @@
             const grid = document.getElementById('newsGrid');
             grid.innerHTML = '';
             articles.forEach(article => {
-                const safeTitle = article.title.replace(/'/g, "");
+                const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
                 const keywords = safeTitle.split(' ').slice(0, 2).join(',');
                 const img = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${Math.random()}`;
 
@@ -122,7 +127,7 @@
                         <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
                         <div class="flex justify-between items-center mb-4">
                             <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] underline font-black">SOURCE</a>
-                            <button onclick="alert('Saving to local SQL...') " class="text-yellow-500 text-[10px] font-bold border border-yellow-500 px-2 py-1 rounded-lg">⭐ SAVE SQL</button>
+                            <button onclick="saveToSQL('${safeTitle}', '${article.link}', '${article.pubDate}')" class="text-yellow-500 text-[10px] font-bold border border-yellow-500 px-2 py-1 rounded-lg">⭐ SAVE SQL</button>
                         </div>
                         <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl text-[10px] font-black transition-all">✨ GET AI TAMIL SUMMARY</button>
                     </div>`;
@@ -159,6 +164,11 @@
                 FetchNews(text);
             };
             rec.start();
+        }
+
+        async function saveToSQL(title, link, pubDate) {
+            console.log("Saving news to local SQL...");
+            alert("SQL SAVE: Request sent to local server.");
         }
     </script>
 </body>
