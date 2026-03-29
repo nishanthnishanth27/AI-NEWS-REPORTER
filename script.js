@@ -1,13 +1,33 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakI5NA1ZRuRRk';
 
-// 1. Fetch News Function (Fixed syntax and URL)
+// 1. SPLASH SCREEN CONTROL - Idhu dhaan black screen-ai remove pannum
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
+    
+    // 2 seconds-ku apparam splash screen-ai hide pannum
+    setTimeout(() => {
+        if (splash) {
+            splash.style.transition = 'opacity 0.8s ease';
+            splash.style.opacity = '0';
+            
+            setTimeout(() => {
+                splash.style.display = 'none';
+                // Splash screen mudinja udanae default-aa Technology news load aagum
+                FetchNews('Technology'); 
+            }, 800);
+        }
+    }, 2000); 
+});
+
+// 2. FETCH NEWS FUNCTION (Fixed: Added https:// and Template Literals)
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
 
+    // Category button logic
     if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
 
-    // Using backticks for template literals
+    // Loading Animation
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
@@ -16,7 +36,7 @@ async function FetchNews(forcedQuery) {
 
     try {
         const ts = new Date().getTime(); 
-        // FIXED: Added https:// and corrected template literals
+        // FIXED URL: https:// add panniyaachu
         const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
         const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
 
@@ -24,34 +44,37 @@ async function FetchNews(forcedQuery) {
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
+            // Latest news-ai sort panni display pannum
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-            displayNews(data.items.slice(0, 16), query);
+            displayNews(data.items.slice(0, 16));
         } else {
-            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found for "${query}".</p>`;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-500">No updates found for "${query}".</p>`;
         }
     } catch (e) {
         console.error("Fetch Error:", e);
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Please check your connection.</p>`;
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Internet connection-ai check pannunga.</p>`;
     }
 }
 
-// 2. Display Function (Fixed image logic and UI)
-function displayNews(articles, searchQuery) {
+// 3. DISPLAY FUNCTION (Unga image-la irukka maari UI layout)
+function displayNews(articles) {
     const grid = document.getElementById('newsGrid');
     if (!grid) return;
     grid.innerHTML = ''; 
 
     articles.forEach((article) => {
+        // SQL and AI processing-ku easy-aa title-ai clean pannuvom
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         const dateObj = new Date(article.pubDate);
         const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
         
+        // Dynamic Images based on Title
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${Math.floor(Math.random() * 8000)}`;
 
         grid.innerHTML += `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
+            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl group">
                 <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
                      onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
                 
@@ -71,35 +94,39 @@ function displayNews(articles, searchQuery) {
     });
 }
 
-// 3. AI Insights Logic (Fixed Speech Synthesis)
+// 4. AI SUMMARY (Gemini Flash API)
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerText = "🤖 ANALYZING...";
     button.disabled = true;
+    
+    // Previous speech-ai stop pannum
     window.speechSynthesis.cancel();
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this in 2 lines of simple Tamil: "${title}"` }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this technology news in 2 lines of simple Tamil: "${title}"` }] }] })
         });
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
         
+        // Tamil Voice Output
         const speech = new SpeechSynthesisUtterance(summary);
         speech.lang = 'ta-IN';
         window.speechSynthesis.speak(speech);
         
         alert(`🚀 AI REPORT:\n\n${summary}`);
     } catch (e) { 
-        alert("AI Service is currently busy. Try again in a moment."); 
+        alert("AI Service currently busy. Apparam try pannunga."); 
     } finally { 
         button.innerHTML = originalText; 
         button.disabled = false; 
     }
 }
 
-// 4. SQL Save Function (Fixed URL and response handling)
+// 5. SQL SAVE FUNCTION
 async function saveToSQL(title, link, pubDate) {
     const serverUrl = 'http://127.0.0.1:5000/save'; 
 
@@ -116,47 +143,26 @@ async function saveToSQL(title, link, pubDate) {
             alert("ℹ️ INFO: " + result.message);
         }
     } catch (e) {
-        alert("❌ ERROR: Connection Failed! Ensure 'app.py' is running on your laptop.");
+        alert("❌ ERROR: Connection Failed! 'app.py' run aagudha-nu check pannunga.");
     }
 }
 
-// 5. Splash Screen Logic (Fixed Timeout and trigger)
-window.addEventListener('load', () => {
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-        setTimeout(() => {
-            splash.style.transition = 'opacity 0.6s ease';
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-                FetchNews(); 
-            }, 600);
-        }, 2000); 
-    } else {
-        FetchNews();
-    }
-});
-
-// Category Search
+// Category and Search Helpers
 function FetchByCategory(category) {
     document.getElementById('searchInput').value = category;
     FetchNews(category);
 }
 
-// Voice Search (Fixed Mic Icon toggle)
 function startVoiceSearch() {
-    const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("Voice recognition not supported.");
+    if (!SpeechRecognition) return alert("Browser not supported");
     
     const rec = new SpeechRecognition();
     rec.lang = 'en-IN';
-    rec.onstart = () => { if(micBtn) micBtn.innerHTML = "🔴"; };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { if(micBtn) micBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
     rec.start();
 }
