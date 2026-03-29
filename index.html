@@ -13,7 +13,7 @@
         #splash-screen { transition: opacity 0.8s ease-out; }
     </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
+<body class="bg-gray-950 text-white min-h-screen overflow-x-hidden">
 
     <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black">
         <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png" 
@@ -26,40 +26,45 @@
         </div>
     </div>
 
-    <header class="p-4 bg-black border-b border-gray-900 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-lg font-black text-blue-500 italic uppercase">AI NEWS</h1>
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-bold text-gray-400">NISHANTH KN</span>
-                <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/profile.png" class="w-8 h-8 rounded-full border border-blue-600" onerror="this.src='https://via.placeholder.com/50'">
+    <div id="main-content" class="hidden">
+        <header class="p-4 bg-black border-b border-gray-900 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <h1 class="text-lg font-black text-blue-500 italic uppercase">AI NEWS</h1>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-gray-400">NISHANTH KN</span>
+                    <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/profile.png" class="w-8 h-8 rounded-full border border-blue-600" onerror="this.src='https://via.placeholder.com/50'">
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="p-6 max-w-7xl mx-auto">
-        <div class="max-w-2xl mx-auto mb-10 flex gap-2">
-            <input type="text" id="searchInput" placeholder="Search news..." class="flex-1 bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 outline-none focus:border-blue-500">
-            <button onclick="FetchNews()" class="bg-blue-600 px-6 py-3 rounded-2xl font-bold uppercase text-xs">Search</button>
-        </div>
-        <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </main>
+        <main class="p-6 max-w-7xl mx-auto">
+            <div class="max-w-2xl mx-auto mb-10 flex gap-2">
+                <input type="text" id="searchInput" placeholder="Search news..." class="flex-1 bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 outline-none focus:border-blue-500">
+                <button onclick="FetchNews()" class="bg-blue-600 px-6 py-3 rounded-2xl font-bold uppercase text-xs">Search</button>
+            </div>
+            <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </main>
+    </div>
 
     <script>
         const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakI5NA1ZRuRRk';
 
-        // Fix: Force Splash Screen to disappear
-        window.onload = () => {
-            console.log("Page loaded. Starting splash removal...");
+        // SAFETY LOGIC: Automatic Splash Screen Removal
+        function hideSplash() {
             const splash = document.getElementById('splash-screen');
+            const main = document.getElementById('main-content');
             
+            splash.style.opacity = '0';
             setTimeout(() => {
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    FetchNews('Technology');
-                }, 800);
-            }, 3000); // 3 seconds wait
-        };
+                splash.style.display = 'none';
+                main.classList.remove('hidden'); // Content-ai show pannum
+                FetchNews('Technology');
+            }, 800);
+        }
+
+        // Window load aagala-naalum 3 seconds-la hide panna force pannuvom
+        window.addEventListener('load', hideSplash);
+        setTimeout(hideSplash, 3500); // Fail-safe timer
 
         async function FetchNews(forcedQuery) {
             let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
@@ -67,6 +72,7 @@
             grid.innerHTML = `<p class="col-span-full text-center text-blue-500 animate-pulse font-bold">📡 FETCHING: ${query.toUpperCase()}</p>`;
 
             try {
+                // RSS to JSON API - Reliable proxy
                 const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta&gl=IN&ceid=IN:ta`;
                 const rssToJson = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
@@ -77,7 +83,7 @@
                     displayNews(data.items.slice(0, 12));
                 }
             } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading news.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading news. Check Connection.</p>`;
             }
         }
 
@@ -90,10 +96,8 @@
                     <div class="bg-gray-900 border border-gray-800 p-4 rounded-3xl hover:border-blue-500 transition-all">
                         <img src="https://loremflickr.com/400/220/tech?lock=${Math.random()}" class="rounded-2xl mb-4 w-full h-40 object-cover">
                         <h3 class="font-bold text-sm mb-4 line-clamp-2">${article.title}</h3>
-                        <div class="flex flex-col gap-2">
-                            <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] uppercase font-black underline mb-2 text-center">Source Link</a>
-                            <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 py-3 rounded-2xl text-[10px] font-black uppercase">✨ Get AI Summary</button>
-                        </div>
+                        <a href="${article.link}" target="_blank" class="text-blue-400 text-[10px] uppercase font-black underline mb-4 block text-center">Read Full Story</a>
+                        <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 py-3 rounded-2xl text-[10px] font-black uppercase shadow-lg">✨ AI Summary</button>
                     </div>`;
             });
         }
@@ -105,11 +109,11 @@
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize in 2 lines Tamil: ${title}` }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize in 2 lines simple Tamil: ${title}` }] }] })
                 });
                 const d = await res.json();
-                alert("AI SUMMARY:\n\n" + d.candidates[0].content.parts[0].text);
-            } catch (e) { alert("AI Busy!"); }
+                alert("AI TAMIL SUMMARY:\n\n" + d.candidates[0].content.parts[0].text);
+            } catch (e) { alert("AI Service Busy!"); }
             btn.innerText = original;
         }
     </script>
