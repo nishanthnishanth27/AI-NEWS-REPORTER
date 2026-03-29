@@ -46,108 +46,57 @@
 </head>
 <body class="bg-gray-950 text-white font-sans min-h-screen">
 
-    <nav class="p-4 bg-black border-b border-blue-900/30 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black tracking-tighter text-blue-500">🤖 AI NEWS REPORTER</h1>
-            <div class="flex items-center gap-3 bg-gray-900/80 p-1.5 pr-4 rounded-full border border-gray-800">
-                <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png" 
-                     class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover"
-                     onerror="this.src='https://ui-avatars.com/api/?name=Nishanth&background=007bff&color=fff'">
-                <div class="text-[10px] text-right leading-none">
-                    <p class="font-bold text-blue-400 uppercase mb-1">Developed by:</p>
-                    <p class="font-bold text-white">NISHANTH KN</p>
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
+
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black">
+        </div>
+
+    <div class="flex h-screen w-full overflow-hidden">
+
+        <aside class="w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col flex-shrink-0 transition-all duration-300">
+            <div class="p-6 flex items-center gap-3 border-b border-gray-800">
+                <img src="logo.png" class="w-8 h-8 rounded-lg">
+                <span class="hidden lg:block font-black text-xs text-blue-500">AI NEWS REPORTER</span>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <button onclick="switchTab('newsFeed')" class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
+                    <i class="fas fa-home text-lg text-gray-400 group-hover:text-blue-500"></i>
+                    <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">Dashboard</span>
+                </button>
+                <button onclick="switchTab('sqlDatabase')" class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
+                    <i class="fas fa-database text-lg text-gray-400 group-hover:text-blue-500"></i>
+                    <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">SQL Archive</span>
+                </button>
+                <button onclick="switchTab('emailAlerts')" class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
+                    <i class="fas fa-satellite-dish text-lg text-gray-400 group-hover:text-blue-500"></i>
+                    <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">Activity Logs</span>
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <img src="profile.png" class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
+                    <div class="hidden lg:block">
+                        <p class="text-[10px] font-bold text-white uppercase leading-none">NISHANTH KN</p>
+                        <p class="text-[9px] text-gray-500 mt-1">PCE AI&DS - 2026</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </aside>
 
-    <div class="p-6 max-w-4xl mx-auto relative">
-        <div class="flex gap-2 bg-gray-900 p-2 rounded-2xl border border-gray-800 focus-within:border-blue-500 items-center shadow-lg">
-            <input type="text" id="searchInput" 
-                   oninput="showSuggestions(this.value)" 
-                   placeholder="Search topics (AI, Cricket, Space)..." 
-                   autocomplete="off" 
-                   class="flex-1 bg-transparent p-3 outline-none text-gray-200 text-sm">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-[#0a0a0a]">
             
-            <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-400 hover:text-blue-500 transition-colors text-xl">🎤</button>
-            <button onclick="FetchNews()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all text-sm">Search</button>
-        </div>
-
-        <div id="suggestionBox" class="absolute left-6 right-6 mt-2 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-[99] hidden overflow-hidden backdrop-blur-md bg-opacity-95">
-        </div>
-
-        <div class="flex flex-wrap justify-center gap-3 mt-6">
-            <button onclick="FetchByCategory('Technology')" class="px-4 py-2 bg-gray-900 text-blue-400 rounded-full border border-gray-800 hover:bg-blue-900/20 text-[12px] font-bold">💻 TECH</button>
-            <button onclick="FetchByCategory('Sports')" class="px-4 py-2 bg-gray-900 text-green-400 rounded-full border border-gray-800 hover:bg-blue-900/20 text-[12px] font-bold">🏆 SPORTS</button>
-            <button onclick="FetchByCategory('Business')" class="px-4 py-2 bg-gray-900 text-yellow-400 rounded-full border border-gray-800 hover:bg-blue-900/20 text-[12px] font-bold">💼 BUSINESS</button>
-            <button onclick="FetchByCategory('Tamil nadu')" class="px-4 py-2 bg-gray-900 text-red-400 rounded-full border border-gray-800 hover:bg-blue-900/20 text-[12px] font-bold">📍 LOCAL</button>
-        </div>
-    </div>
-    </div>
-
-    <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto min-h-[50vh] logo-bg rounded-[40px]">
-        <div class="col-span-full flex flex-col items-center justify-center py-20 gap-6">
-            <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png" class="w-48 opacity-40 shadow-blue-500/20">
-            <div class="text-center">
-                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 animate-pulse">Initializing AI Engine...</p>
-                <div class="w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto mt-4">
-                    <div class="h-full bg-blue-600 animate-loading-bar" style="width: 30%;"></div>
-                </div>
+            <div id="newsFeedSection">
+                <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
             </div>
-        </div>
-    </div>
 
-    <footer class="p-10 text-center text-gray-600 text-[10px] uppercase tracking-widest mt-10 border-t border-gray-900">
-        &copy; 2026 NISHANTH KN | PCE | AI&DS
-    </footer>
+            <div id="sqlDatabaseSection" class="hidden">
+                 <h2 class="text-xl font-bold p-4">Your Saved SQL News</h2>
+                 </div>
+        </main>
+    </div>
 
     <script src="script.js"></script>
-    <div class="flex h-screen bg-black text-white font-sans overflow-hidden">
-    
-    <aside class="w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col transition-all duration-300">
-        <div class="p-6 flex items-center gap-3">
-            <img src="logo.png" class="w-8 h-8 rounded-lg shadow-lg" onerror="this.src='https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png'">
-            <span class="hidden lg:block font-black text-xs tracking-widest uppercase text-blue-500">AI REPORTER</span>
-        </div>
-
-        <nav class="flex-1 px-4 space-y-2 mt-4">
-            <button onclick="FetchNews()" class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
-                <i class="fas fa-home text-lg text-gray-400 group-hover:text-blue-500"></i>
-                <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">Dashboard</span>
-            </button>
-
-            <button class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
-                <i class="fas fa-robot text-lg text-gray-400 group-hover:text-blue-500"></i>
-                <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">AI Insights</span>
-            </button>
-
-            <button class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
-                <i class="fas fa-database text-lg text-gray-400 group-hover:text-blue-500"></i>
-                <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">SQL Database</span>
-            </button>
-
-            <button class="w-full flex items-center p-3 rounded-2xl hover:bg-blue-600/10 group transition-all">
-                <i class="fas fa-satellite-dish text-lg text-gray-400 group-hover:text-blue-500"></i>
-                <span class="hidden lg:block ml-4 text-[11px] font-bold uppercase tracking-wider">Email Alerts</span>
-            </button>
-        </nav>
-
-        <div class="p-4 border-t border-gray-800">
-            <div class="flex items-center gap-3">
-                <img src="profile.png" class="w-8 h-8 rounded-full border-2 border-blue-500" onerror="this.src='https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png'">
-                <div class="hidden lg:block text-[10px]">
-                    <p class="font-black text-white uppercase">NISHANTH KN</p>
-                    <p class="text-gray-500">PCE AI&DS - 2026</p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-        <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
-    </main>
-    </div>
-    
 </body>
-</html>
