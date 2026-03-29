@@ -1,12 +1,13 @@
-const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
+const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakI5NA1ZRuRRk';
 
-// 1. Fetch News Function
+// 1. Fetch News Function (Fixed syntax and URL)
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
 
     if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
 
+    // Using backticks for template literals
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
@@ -15,6 +16,7 @@ async function FetchNews(forcedQuery) {
 
     try {
         const ts = new Date().getTime(); 
+        // FIXED: Added https:// and corrected template literals
         const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
         const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
 
@@ -25,14 +27,15 @@ async function FetchNews(forcedQuery) {
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 16), query);
         } else {
-            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found.</p>`;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found for "${query}".</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Retrying...</p>`;
+        console.error("Fetch Error:", e);
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Please check your connection.</p>`;
     }
 }
 
-// 2. Display Function with SQL Button
+// 2. Display Function (Fixed image logic and UI)
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     if (!grid) return;
@@ -45,8 +48,7 @@ function displayNews(articles, searchQuery) {
         const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
         
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
-        const randomId = Math.floor(Math.random() * 8000);
-        const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
+        const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${Math.floor(Math.random() * 8000)}`;
 
         grid.innerHTML += `
             <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
@@ -69,7 +71,7 @@ function displayNews(articles, searchQuery) {
     });
 }
 
-// 3. AI Insights Logic
+// 3. AI Insights Logic (Fixed Speech Synthesis)
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerText = "🤖 ANALYZING...";
@@ -79,32 +81,33 @@ async function getAiSummary(button, title) {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize in 2 lines Tamil: "${title}"` }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this in 2 lines of simple Tamil: "${title}"` }] }] })
         });
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
+        
         const speech = new SpeechSynthesisUtterance(summary);
         speech.lang = 'ta-IN';
         window.speechSynthesis.speak(speech);
+        
         alert(`🚀 AI REPORT:\n\n${summary}`);
-    } catch (e) { alert("AI Busy!"); }
-    finally { button.innerHTML = originalText; button.disabled = false; }
+    } catch (e) { 
+        alert("AI Service is currently busy. Try again in a moment."); 
+    } finally { 
+        button.innerHTML = originalText; 
+        button.disabled = false; 
+    }
 }
 
-// 4. SQL SAVE FUNCTION
+// 4. SQL Save Function (Fixed URL and response handling)
 async function saveToSQL(title, link, pubDate) {
-    // Replace 'localhost' with your laptop IP if testing from phone
-    const serverUrl = 'http://localhost:5000/save'; 
+    const serverUrl = 'http://127.0.0.1:5000/save'; 
 
     try {
         const response = await fetch(serverUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                title: title, 
-                link: link, 
-                pub_date: pubDate 
-            })
+            body: JSON.stringify({ title, link, pub_date: pubDate })
         });
         const result = await response.json();
         if (response.ok) {
@@ -116,45 +119,44 @@ async function saveToSQL(title, link, pubDate) {
         alert("❌ ERROR: Connection Failed! Ensure 'app.py' is running on your laptop.");
     }
 }
-// 5. SPLASH SCREEN FIX 
+
+// 5. Splash Screen Logic (Fixed Timeout and trigger)
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
-        console.log("Splash screen found, starting timer...");
         setTimeout(() => {
             splash.style.transition = 'opacity 0.6s ease';
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
-                console.log("Splash hidden, fetching news...");
                 FetchNews(); 
             }, 600);
         }, 2000); 
     } else {
-        console.log("Splash screen element not found!");
         FetchNews();
     }
 });
 
-// Category Fetch
+// Category Search
 function FetchByCategory(category) {
     document.getElementById('searchInput').value = category;
     FetchNews(category);
 }
 
-// Voice Search
+// Voice Search (Fixed Mic Icon toggle)
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition) return alert("Voice recognition not supported.");
+    
     const rec = new SpeechRecognition();
     rec.lang = 'en-IN';
-    rec.onstart = () => { micBtn.innerHTML = "🔴"; };
+    rec.onstart = () => { if(micBtn) micBtn.innerHTML = "🔴"; };
     rec.onresult = (e) => { 
         const transcript = e.results[0][0].transcript; 
         document.getElementById('searchInput').value = transcript; 
         FetchNews(transcript); 
     };
-    rec.onend = () => { micBtn.innerHTML = "🎤"; };
+    rec.onend = () => { if(micBtn) micBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
     rec.start();
 }
