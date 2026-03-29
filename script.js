@@ -57,7 +57,10 @@ function displayNews(articles, searchQuery) {
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
 
         grid.innerHTML += `
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
+                <div class="relative bg-black border border-gray-800 p-5 rounded-[32px] overflow-hidden group shadow-2xl flex flex-col min-h-[300px]">
+                <div class="absolute inset-0 z-0 bg-cover bg-center opacity-30 grayscale group-hover:opacity-50 group-hover:grayscale-0 transition-all duration-500" 
+                     style="background-image: url('https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png');"></div>
+                <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
                 <div class="absolute top-4 right-4 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">LATEST</div>
                 <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
                      onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
