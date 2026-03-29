@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌐AI News Reporter Pro - NISHANTH KN</title>
+    <title>AI News Reporter - NISHANTH KN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -18,18 +18,23 @@
 <body class="bg-gray-950 text-white font-sans min-h-screen custom-scrollbar">
 
     <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-600">
-        <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png" class="w-24 h-24 mb-6 animate-bounce" alt="Logo">
+        <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png" 
+             class="w-24 h-24 mb-6 animate-bounce" 
+             alt="Logo"
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/3820/3820177.png'">
         <h1 class="text-2xl font-black text-blue-500 tracking-tighter uppercase">AI NEWS REPORTER</h1>
         <p class="text-gray-500 text-[9px] mt-2 uppercase tracking-widest">Developed by NISHANTH KN</p>
         <div class="w-48 h-1 bg-gray-900 rounded-full mt-8 overflow-hidden">
-            <div class="h-full bg-blue-600 animate-loading-bar"></div>
+            <div class="h-full bg-blue-600 animate-loading-bar" style="width: 30%;"></div>
         </div>
     </div>
 
     <header class="p-4 bg-black border-b border-gray-900 sticky top-0 z-50 shadow-2xl">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png" class="w-10 h-10">
+                <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png" 
+                     class="w-10 h-10 object-contain" 
+                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/3820/3820177.png'">
                 <h1 class="text-lg font-black text-blue-500 tracking-tighter uppercase">AI NEWS REPORTER</h1>
             </div>
             <div class="flex items-center gap-3 bg-gray-900/50 p-2 px-4 rounded-2xl border border-gray-800">
@@ -37,7 +42,9 @@
                     <p class="text-[8px] text-blue-400 font-bold uppercase tracking-tighter">Developed By:</p>
                     <p class="text-[10px] font-black uppercase">NISHANTH KN</p>
                 </div>
-                <img src="profile.png" class="w-9 h-9 rounded-full border-2 border-blue-600 object-cover shadow-lg shadow-blue-500/20" onerror="this.src='https://via.placeholder.com/100'">
+                <img src="https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/profile.png" 
+                     class="w-9 h-9 rounded-full border-2 border-blue-600 object-cover shadow-lg"
+                     onerror="this.src='https://via.placeholder.com/100'">
             </div>
         </div>
     </header>
@@ -54,22 +61,15 @@
             </div>
 
             <div class="flex flex-wrap gap-2 justify-center mt-8">
-                <button onclick="FetchByCategory('Technology')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-blue-500 flex items-center gap-2 transition-all">💻 TECH</button>
-                <button onclick="FetchByCategory('Sports')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-green-500 flex items-center gap-2 transition-all">🏆 SPORTS</button>
-                <button onclick="FetchByCategory('Business')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-yellow-500 flex items-center gap-2 transition-all">💼 BUSINESS</button>
-                <button onclick="FetchByCategory('Tamil Nadu')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-red-500 flex items-center gap-2 transition-all">📍 LOCAL</button>
+                <button onclick="FetchByCategory('Technology')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-blue-500 transition-all">💻 TECH</button>
+                <button onclick="FetchByCategory('Sports')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-green-500 transition-all">🏆 SPORTS</button>
+                <button onclick="FetchByCategory('Business')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-yellow-500 transition-all">💼 BUSINESS</button>
+                <button onclick="FetchByCategory('Tamil Nadu')" class="bg-gray-900 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-gray-800 hover:border-red-500 transition-all">📍 LOCAL</button>
             </div>
         </div>
 
         <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             </div>
-
-        <div id="sqlDatabaseSection" class="hidden text-center py-20">
-            <i class="fas fa-database text-6xl text-gray-800 mb-6"></i>
-            <h2 class="text-2xl font-black uppercase tracking-tighter">SQL Database Archive</h2>
-            <p class="text-gray-500 text-sm mt-2">Saved news from local server will appear here.</p>
-            <button onclick="location.reload()" class="mt-8 text-blue-500 font-bold border-b border-blue-500">Back to Feed</button>
-        </div>
     </main>
 
     <footer class="p-10 text-center border-t border-gray-900 mt-20">
