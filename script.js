@@ -19,35 +19,38 @@ function sendLoginAlert() {
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
-
-    // Tracking: Search pannum pothum alert varum
+    
+    // Tracking alert (Keep this as you have it)
     sendSearchAlert(query);
 
-    if (query === 'Local') { query = 'site:tamil.oneindia.com'; }
-
+    // Loading Animation
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-            <p class="text-blue-400 font-bold animate-pulse uppercase tracking-widest">📡 AI SYNCING: ${query.toUpperCase()}</p>
+            <p class="text-blue-400 font-bold animate-pulse tracking-widest uppercase">AI SYNCING: ${query.toUpperCase()}</p>
         </div>`;
 
     try {
-        const ts = new Date().getTime(); 
-        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
-        const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
+        const ts = new Date().getTime();
+        // Fixed URL logic
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta&gl=IN&ceid=IN:ta`;
+        const rssToJson = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&api_key=YOUR_RSS2JSON_KEY&nocache=${ts}`;
 
-        const response = await fetch(`${rssToJson}${encodeURIComponent(rssUrl)}&nocache=${ts}`);
+        const response = await fetch(rssToJson);
         const data = await response.json();
 
-        if (data.items && data.items.length > 0) {
+        if (data.status === 'ok' && data.items.length > 0) {
+            // Sort by date
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 16), query);
         } else {
-            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No updates found.</p>`;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400 uppercase font-bold">No updates found for "${query}"</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20">Network Busy. Retrying...</p>`;
+        grid.innerHTML = `<p class="col-span-full text-center py-20 text-red-500 font-bold uppercase">Network Busy. Retrying...</p>`;
+        console.error("Fetch Error:", e);
     }
+}
 }
 
 // 2. EmailJS Function for Tracking
