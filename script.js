@@ -47,10 +47,8 @@ function displayNews(articles, searchQuery) {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         
         // Date and Time Formatting
-        const dateObj = new Date(article.pubDate);
-        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
-        
+const relativeTime = getRelativeTime(article.pubDate);
+const dateStr = new Date(article.pubDate).toLocaleDateString([], { day: 'numeric', month: 'short' });
         // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
         const randomId = Math.floor(Math.random() * 8000);
