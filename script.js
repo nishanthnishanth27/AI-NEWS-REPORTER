@@ -161,3 +161,8 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
+// Auto-fetch news every 30 minutes (1800000 milliseconds)
+setInterval(() => {
+    console.log("Auto-fetching latest news...");
+    FetchNews(); 
+}, 1800000); 
