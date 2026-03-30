@@ -2,9 +2,11 @@ const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
 
 // 1. Core Fetching Function
 async function FetchNews(forcedQuery) {
+    // FIX: Variable definition must come first
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
 
+    // Instagram/Website Sync for 'Local' Category
     if (query === 'Local') {
         query = 'site:tamil.oneindia.com'; 
     }
@@ -24,6 +26,7 @@ async function FetchNews(forcedQuery) {
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
+            // Sort to show newest news first
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 16), query);
         } else {
@@ -35,7 +38,7 @@ async function FetchNews(forcedQuery) {
     }
 }
 
-// 2. Display Function (✅ IST TIME FIX APPLIED)
+// 2. Display Function with Date & Time Fix
 function displayNews(articles, searchQuery) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = ''; 
@@ -43,49 +46,38 @@ function displayNews(articles, searchQuery) {
     articles.forEach((article) => {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         
+        // Date and Time Formatting
         const dateObj = new Date(article.pubDate);
-
-        // 🔥 IST TIMEZONE FIX
-        const timeStr = dateObj.toLocaleTimeString('en-IN', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true,
-            timeZone: 'Asia/Kolkata'
-        });
-
-        const dateStr = dateObj.toLocaleDateString('en-IN', { 
-            day: '2-digit', 
-            month: 'short', 
-            year: 'numeric',
-            timeZone: 'Asia/Kolkata'
-        });
+        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
         
+        // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
         const randomId = Math.floor(Math.random() * 8000);
         const imageUrl = `https://loremflickr.com/400/250/${encodeURIComponent(keywords)}?lock=${randomId}`;
 
         grid.innerHTML += `
-            <div class="relative bg-black border border-gray-800 p-5 rounded-[32px] overflow-hidden group shadow-2xl flex flex-col min-h-[300px]">
-            <div class="absolute inset-0 z-0 bg-cover bg-center opacity-30 grayscale group-hover:opacity-50 group-hover:grayscale-0 transition-all duration-500" 
-                 style="background-image: url('https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png');"></div>
-            <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
-            <div class="absolute top-4 right-4 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">LATEST</div>
-            <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
-                 onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
-            
-            <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">
-                📅 ${dateStr}  |  🕒 ${timeStr} IST
-            </div>
+                <div class="relative bg-black border border-gray-800 p-5 rounded-[32px] overflow-hidden group shadow-2xl flex flex-col min-h-[300px]">
+                <div class="absolute inset-0 z-0 bg-cover bg-center opacity-30 grayscale group-hover:opacity-50 group-hover:grayscale-0 transition-all duration-500" 
+                     style="background-image: url('https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/logo.png');"></div>
+                <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl hover:border-blue-500 transition-all flex flex-col relative shadow-2xl overflow-hidden group">
+                <div class="absolute top-4 right-4 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">LATEST</div>
+                <img src="${imageUrl}" class="w-full h-44 object-cover rounded-2xl mb-4 bg-gray-800 group-hover:scale-105 transition-all" 
+                     onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
+                
+                <div class="text-[9px] text-gray-400 font-bold mb-2 uppercase tracking-tighter">
+                    📅 ${dateStr}  |  🕒 ${timeStr}
+                </div>
 
-            <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
-            <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
-                <a href="${article.link}" target="_blank" class="text-blue-400 underline decoration-blue-900">VIEW SOURCE</a>
-                <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500 font-bold">SHARE</button>
-            </div>
-            <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl text-[10px] font-black tracking-widest transition-all shadow-lg active:scale-95">
-                ✨ GET AI TAMIL SUMMARY
-            </button>
-        </div>`;
+                <h3 class="font-bold text-sm mb-4 line-clamp-2 text-gray-100">${article.title}</h3>
+                <div class="flex justify-between items-center mb-4 text-[10px] font-black uppercase">
+                    <a href="${article.link}" target="_blank" class="text-blue-400 underline decoration-blue-900">VIEW SOURCE</a>
+                    <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(article.link)}')" class="text-green-500 font-bold">SHARE</button>
+                </div>
+                <button onclick="getAiSummary(this, '${safeTitle}')" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl text-[10px] font-black tracking-widest transition-all shadow-lg active:scale-95">
+                    ✨ GET AI TAMIL SUMMARY
+                </button>
+            </div>`;
     });
 }
 
@@ -111,7 +103,7 @@ async function getAiSummary(button, title) {
     finally { button.innerHTML = originalText; button.disabled = false; }
 }
 
-// 4. Voice Search
+// 4. Voice Search Functionality
 function startVoiceSearch() {
     const micBtn = document.getElementById('micBtn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -137,7 +129,7 @@ function startVoiceSearch() {
     rec.start();
 }
 
-// 5. Init
+// 5. Initialization and Splash Control
 document.addEventListener('DOMContentLoaded', () => FetchNews());
 
 function FetchByCategory(category) {
