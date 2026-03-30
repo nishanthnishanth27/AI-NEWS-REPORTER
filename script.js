@@ -146,13 +146,23 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
-// Navigation Menu Toggle Logic
-const icon = document.querySelector(".icon");
-const nav = document.querySelector("nav");
+// Function to handle Sidebar Toggle
+const menuIcon = document.querySelector(".icon");
+const sideNavbar = document.querySelector("nav");
 
-if (icon && nav) {
-    icon.addEventListener("click", () => {
-        icon.classList.toggle("close");
-        nav.classList.toggle("show");
+if (menuIcon && sideNavbar) {
+    menuIcon.addEventListener("click", () => {
+        // This adds/removes the 'show' class which triggers the CSS width change
+        sideNavbar.classList.toggle("show");
+        
+        // Optional: Animate the 3 bars into an 'X' shape
+        menuIcon.classList.toggle("active");
     });
 }
+
+// Close menu when clicking a link (Optional but recommended)
+document.querySelectorAll("nav ul li a").forEach(link => {
+    link.addEventListener("click", () => {
+        sideNavbar.classList.remove("show");
+    });
+});
