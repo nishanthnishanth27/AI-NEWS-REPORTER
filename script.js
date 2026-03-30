@@ -63,8 +63,12 @@ if (diffInMins < 60) {
 }
 
 // Date and Time Formatting for display
-const timeStr = pubDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-const dateStr = timeDisplay; // Ippo idhu "5 MINS AGO" maari accurate-aa kaatum
+        // IST Timing Logic
+        const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
+        const timeStr = pubDate.toLocaleTimeString('en-IN', options);
+        
+        // Accurate Time Display (e.g., 5 MINS AGO)
+        const dateStr = timeDisplay; 
         
         // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
