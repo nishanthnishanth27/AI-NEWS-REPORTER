@@ -46,10 +46,25 @@ function displayNews(articles, searchQuery) {
     articles.forEach((article) => {
         const safeTitle = article.title.replace(/'/g, "").replace(/"/g, "");
         
-        // Date and Time Formatting
-        const dateObj = new Date(article.pubDate);
-        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
+// Timing Correction Logic
+const pubDate = new Date(article.pubDate);
+const now = new Date();
+const diffInMs = now - pubDate;
+const diffInMins = Math.floor(diffInMs / (1000 * 60));
+const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+
+let timeDisplay;
+if (diffInMins < 60) {
+    timeDisplay = `${diffInMins} MINS AGO`;
+} else if (diffInHours < 24) {
+    timeDisplay = `${diffInHours} HOURS AGO`;
+} else {
+    timeDisplay = pubDate.toLocaleDateString([], { day: '2-digit', month: 'short' });
+}
+
+// Date and Time Formatting for display
+const timeStr = pubDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const dateStr = timeDisplay; // Ippo idhu "5 MINS AGO" maari accurate-aa kaatum
         
         // Related Image Logic
         const keywords = safeTitle.split(' ').slice(0, 2).join(',');
