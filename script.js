@@ -154,24 +154,29 @@ function startVoiceSearch() {
     };
     rec.start();
 }
-
-// 5. Initialization and Splash Control
-document.addEventListener('DOMContentLoaded', () => FetchNews());
-
-function FetchByCategory(category) {
-    document.getElementById('searchInput').value = category;
-    FetchNews(category);
-}
+// 5. Initialization and Splash Control Fix
+document.addEventListener('DOMContentLoaded', () => {
+    FetchNews(); // App open aagum pothu news fetch aagum
+});
 
 window.addEventListener('load', () => {
+    // Splash screen-oda ID 'splash-screen' nu irukanum
     const splash = document.getElementById('splash-screen');
-    if(splash) {
+    if (splash) {
+        console.log("Splash found, starting timer...");
         setTimeout(() => {
+            splash.style.transition = 'opacity 1s ease';
             splash.style.opacity = '0';
-            setTimeout(() => splash.style.display = 'none', 1000);
-        }, 2500);
+            setTimeout(() => {
+                splash.style.display = 'none';
+                console.log("Splash hidden.");
+            }, 1000);
+        }, 2500); // 2.5 seconds apram hide aagum
+    } else {
+        console.log("Splash ID not found!");
     }
 });
+
 // Auto-fetch news every 30 minutes (1800000 milliseconds)
 setInterval(() => {
     console.log("Auto-fetching latest news...");
