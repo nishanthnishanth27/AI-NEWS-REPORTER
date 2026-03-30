@@ -146,3 +146,13 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
+// Navigation Menu Toggle Logic
+const icon = document.querySelector(".icon");
+const nav = document.querySelector("nav");
+
+if (icon && nav) {
+    icon.addEventListener("click", () => {
+        icon.classList.toggle("close");
+        nav.classList.toggle("show");
+    });
+}
