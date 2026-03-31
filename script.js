@@ -146,24 +146,3 @@ window.addEventListener('load', () => {
         }, 2500);
     }
 });
-// Function to handle Sidebar Toggle
-const hamburger = document.getElementById("hamburger");
-const sideMenu = document.getElementById("side-menu");
-
-if (hamburger && sideMenu) {
-    hamburger.addEventListener("click", () => {
-        // Toggle the side menu visibility
-        sideMenu.classList.toggle("open");
-        // Animate the hamburger bars into an 'X'
-        hamburger.classList.toggle("active");
-    });
-
-    // Automatically close the menu when a link is clicked
-    const menuLinks = document.querySelectorAll("#side-menu a");
-    menuLinks.forEach(link => {
-        link.addEventListener("click", () => {
-            sideMenu.classList.remove("open");
-            hamburger.classList.remove("active");
-        });
-    });
-}
