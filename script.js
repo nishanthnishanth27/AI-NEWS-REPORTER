@@ -151,18 +151,19 @@ const hamburger = document.getElementById("hamburger");
 const sideMenu = document.getElementById("side-menu");
 
 if (hamburger && sideMenu) {
-    // Toggle Menu Open/Close
     hamburger.addEventListener("click", () => {
+        // Toggle the side menu visibility
         sideMenu.classList.toggle("open");
+        // Animate the hamburger bars into an 'X'
         hamburger.classList.toggle("active");
     });
 
-    // Close menu when a link inside is clicked
-    document.querySelectorAll("#side-menu a").forEach(link => {
+    // Automatically close the menu when a link is clicked
+    const menuLinks = document.querySelectorAll("#side-menu a");
+    menuLinks.forEach(link => {
         link.addEventListener("click", () => {
             sideMenu.classList.remove("open");
             hamburger.classList.remove("active");
         });
     });
 }
-
