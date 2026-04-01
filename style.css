@@ -1,0 +1,15 @@
+/* Marquee Animation for Breaking News */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 30s linear infinite;
+}
+(Pause on Hover) */
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
