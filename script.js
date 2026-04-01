@@ -17,8 +17,7 @@ function toggleSidebar() {
         document.body.style.overflow = 'auto'; // Enable scroll
     }
 }
-
-// 2. Fetch News Function
+// 2. Fetch News Function (Updated for Local News)
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
@@ -30,15 +29,23 @@ async function FetchNews(forcedQuery) {
         </div>`;
 
     try {
-        const ts = new Date().getTime(); 
-        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
-        const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
+        const ts = new Date().getTime();
+        let rssUrl;
 
+        // LOCAL NEWS FIX: இங்கே தான் மாற்றம் செய்யப்பட்டுள்ளது
+        if (query === 'Tamil Nadu' || query === 'Local') {
+            // கூகுள் சர்ச் செய்யாமல் நேரடியாக தமிழ் ஒன்இந்தியா RSS-க்கு செல்லும்
+            rssUrl = `https://tamil.oneindia.com/rss/tamil-news-fb.xml`;
+        } else {
+            // மற்ற தலைப்புகளுக்கு பழையபடி கூகுள் நியூஸில் தேடும்
+            rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
+        }
+
+        const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
         const response = await fetch(`${rssToJson}${encodeURIComponent(rssUrl)}&nocache=${ts}`);
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
-            // Sort by Date
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 15));
         } else {
@@ -48,7 +55,6 @@ async function FetchNews(forcedQuery) {
         grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold uppercase text-[10px]">Connection Error. Check Network.</p>`;
     }
 }
-
 // 3. Display News in Cards
 function displayNews(articles) {
     const grid = document.getElementById('newsGrid');
