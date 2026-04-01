@@ -168,3 +168,13 @@ window.addEventListener('load', () => {
         }, 800);
     }, 2500);
 });
+function showAbout() {
+    const aboutText = `🤖 AI NEWS REPORTER v2.4\n\n` +
+    `Developed by: Nishanth KN\n` +
+    `Technology: Google Gemini 1.5 Flash AI\n\n` +
+    `This app provides real-time news updates with AI-powered Tamil summaries. ` +
+    `It uses advanced RSS syncing to fetch news from global and local sources instantly.`;
+    
+    alert(aboutText);
+}
+
