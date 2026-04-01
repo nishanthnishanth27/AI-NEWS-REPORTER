@@ -1,4 +1,5 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
+let currentLang = 'en'; // Default language set to English
 
 // 1. Sidebar Control
 function toggleSidebar() {
@@ -9,15 +10,39 @@ function toggleSidebar() {
         sidebar.classList.replace('sidebar-closed', 'sidebar-open');
         overlay.classList.remove('hidden');
         setTimeout(() => overlay.classList.add('opacity-100'), 10);
-        document.body.style.overflow = 'hidden'; // Prevent scroll
+        document.body.style.overflow = 'hidden'; 
     } else {
         sidebar.classList.replace('sidebar-open', 'sidebar-closed');
         overlay.classList.remove('opacity-100');
         setTimeout(() => overlay.classList.add('hidden'), 300);
-        document.body.style.overflow = 'auto'; // Enable scroll
+        document.body.style.overflow = 'auto'; 
     }
 }
-// 2. Fetch News Function (Updated for Local News)
+
+// 2. Language Switcher Logic
+function changeLanguage(lang) {
+    currentLang = lang;
+    
+    // UI Feedback for Buttons
+    const enBtn = document.getElementById('langEn');
+    const taBtn = document.getElementById('langTa');
+    
+    if (lang === 'ta') {
+        taBtn.classList.add('bg-blue-600', 'text-white');
+        taBtn.classList.remove('text-gray-500');
+        enBtn.classList.remove('bg-blue-600', 'text-white');
+        enBtn.classList.add('text-gray-500');
+    } else {
+        enBtn.classList.add('bg-blue-600', 'text-white');
+        enBtn.classList.remove('text-gray-500');
+        taBtn.classList.remove('bg-blue-600', 'text-white');
+        taBtn.classList.add('text-gray-500');
+    }
+
+    FetchNews(); // Language மாற்றியவுடன் செய்திகளை புதுப்பிக்க
+}
+
+// 3. Fetch News Function
 async function FetchNews(forcedQuery) {
     let query = forcedQuery || document.getElementById('searchInput').value || 'Technology';
     const grid = document.getElementById('newsGrid');
@@ -25,20 +50,22 @@ async function FetchNews(forcedQuery) {
     grid.innerHTML = `
         <div class="col-span-full text-center py-20">
             <div class="animate-spin inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mb-6"></div>
-            <p class="text-blue-500 font-black animate-pulse uppercase tracking-[0.3em] text-[10px]">📡 AI Searching: ${query}</p>
+            <p class="text-blue-500 font-black animate-pulse uppercase tracking-[0.3em] text-[10px]">📡 AI Searching (${currentLang.toUpperCase()}): ${query}</p>
         </div>`;
 
     try {
         const ts = new Date().getTime();
         let rssUrl;
 
-        // LOCAL NEWS FIX: இங்கே தான் மாற்றம் செய்யப்பட்டுள்ளது
+        // Language based parameters for Google News
+        const hl = currentLang === 'ta' ? 'ta-IN' : 'en-IN';
+        const gl = currentLang === 'ta' ? 'IN' : 'US';
+        const ceid = currentLang === 'ta' ? 'IN:ta' : 'US:en';
+
         if (query === 'Tamil Nadu' || query === 'Local') {
-            // கூகுள் சர்ச் செய்யாமல் நேரடியாக தமிழ் ஒன்இந்தியா RSS-க்கு செல்லும்
             rssUrl = `https://tamil.oneindia.com/rss/tamil-news-fb.xml`;
         } else {
-            // மற்ற தலைப்புகளுக்கு பழையபடி கூகுள் நியூஸில் தேடும்
-            rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ta-IN&gl=IN&ceid=IN:ta&v=${ts}`;
+            rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${ceid}&v=${ts}`;
         }
 
         const rssToJson = "https://api.rss2json.com/v1/api.json?rss_url=";
@@ -49,13 +76,14 @@ async function FetchNews(forcedQuery) {
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
             displayNews(data.items.slice(0, 15));
         } else {
-            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-500 uppercase font-bold text-xs">No updates found for "${query}"</p>`;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 text-gray-500 uppercase font-bold text-xs">No updates found for "${query}" in ${currentLang === 'ta' ? 'Tamil' : 'English'}</p>`;
         }
     } catch (e) {
-        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold uppercase text-[10px]">Connection Error. Check Network.</p>`;
+        grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-20 font-bold uppercase text-[10px]">Connection Error. Please check your network.</p>`;
     }
 }
-// 3. Display News in Cards
+
+// 4. Display News in Cards
 function displayNews(articles) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = ''; 
@@ -66,7 +94,6 @@ function displayNews(articles) {
         const dateStr = dateObj.toLocaleDateString([], { day: '2-digit', month: 'short' });
         const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
-        // Random tech image fallback
         const imageUrl = `https://loremflickr.com/400/250/technology,robot?lock=${Math.floor(Math.random() * 9999)}`;
 
         grid.innerHTML += `
@@ -74,7 +101,7 @@ function displayNews(articles) {
                 <div class="overflow-hidden rounded-2xl mb-4 relative">
                     <img src="${imageUrl}" class="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0" 
                          onerror="this.src='https://raw.githubusercontent.com/NishanthKn12/AI-NEWS-REPORTER/main/logo.png'">
-                    <div class="absolute top-3 left-3 bg-blue-600 text-[8px] font-black px-2 py-1 rounded-md shadow-lg uppercase">Global</div>
+                    <div class="absolute top-3 left-3 bg-blue-600 text-[8px] font-black px-2 py-1 rounded-md shadow-lg uppercase">Live Feed</div>
                 </div>
                 
                 <div class="text-[9px] text-gray-500 font-bold mb-3 uppercase tracking-wider flex items-center gap-2">
@@ -99,7 +126,7 @@ function displayNews(articles) {
     });
 }
 
-// 4. Gemini AI Summary
+// 5. Gemini AI Summary
 async function getAiSummary(button, title) {
     const originalText = button.innerHTML;
     button.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> AI ANALYZING...';
@@ -114,29 +141,27 @@ async function getAiSummary(button, title) {
         const data = await response.json();
         const summary = data.candidates[0].content.parts[0].text;
         
-        // Voice Output
         const speech = new SpeechSynthesisUtterance(summary);
         speech.lang = 'ta-IN';
         window.speechSynthesis.speak(speech);
 
-        // Simple alert for result
         alert(`🚀 AI NEWS REPORT:\n\n${summary}`);
 
     } catch (e) { 
-        alert("AI is busy or API limit reached. Try later!"); 
+        alert("AI is busy or API limit reached. Try again later."); 
     } finally { 
         button.innerHTML = originalText; 
         button.disabled = false; 
     }
 }
 
-// 5. Voice Search
+// 6. Voice Search
 function startVoiceSearch() {
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     if (!SpeechRecognition) return alert("Your browser doesn't support Voice Search!");
     
     const rec = new SpeechRecognition();
-    rec.lang = 'en-IN';
+    rec.lang = currentLang === 'ta' ? 'ta-IN' : 'en-IN';
     rec.onstart = () => {
         document.getElementById('micBtn').innerHTML = '<i class="fas fa-microphone text-red-600 animate-pulse"></i>';
     };
@@ -151,30 +176,30 @@ function startVoiceSearch() {
     rec.start();
 }
 
-// 6. Category Filter
+// 7. Category Filter
 function FetchByCategory(category) {
     document.getElementById('searchInput').value = category;
     FetchNews(category);
 }
 
-// 7. Initialization
+// 8. Initialization
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     setTimeout(() => {
         splash.style.opacity = '0';
         setTimeout(() => {
             splash.style.display = 'none';
-            FetchNews(); // Auto load technology news on start
+            FetchNews(); 
         }, 800);
     }, 2500);
 });
+
+// 9. About App
 function showAbout() {
     const aboutText = `🤖 AI NEWS REPORTER v2.4\n\n` +
     `Developed by: Nishanth KN\n` +
     `Technology: Google Gemini 1.5 Flash AI\n\n` +
-    `This app provides real-time news updates with AI-powered Tamil summaries. ` +
-    `It uses advanced RSS syncing to fetch news from global and local sources instantly.`;
+    `This app provides real-time news updates with AI-powered Tamil summaries. It uses advanced RSS syncing to fetch news from global and local sources instantly.`;
     
     alert(aboutText);
 }
-
