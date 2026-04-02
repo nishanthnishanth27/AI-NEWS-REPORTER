@@ -1,7 +1,7 @@
 // API KEYS
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
-const YOUTUBE_API_KEY = 'AlzaSyC9QEMnfzaFxEpZHUerKqwXHT'; 
-
+const YOUTUBE_API_KEY1 = 'AlzaSyC9QEMnfzaFxEpZHUerKqwXHT'; 
+const YOUTUBE_API_KEY2 = 'AIzaSyCPP_wA6I9wQ-OiZsqJchC3QYieiLjY6QU';
 let currentLang = 'en'; // Default language set to English
 
 // 1. Sidebar Control
