@@ -19,22 +19,6 @@
         .sidebar-closed { transform: translateX(-100%); }
         #overlay { transition: opacity 0.3s ease; }
 
-        /* Video Scroll Logic */
-        #videoContainer::-webkit-scrollbar { display: none; }
-        #videoContainer { 
-            scroll-snap-type: y mandatory; 
-            overflow-y: scroll; 
-            height: 100vh; 
-            scrollbar-width: none;
-        }
-        .video-card { 
-            scroll-snap-align: start; 
-            height: 100vh; 
-            width: 100%; 
-            position: relative; 
-            flex-shrink: 0;
-        }
-
         /* Marquee Animation */
         @keyframes marquee {
             0% { transform: translateX(0); }
@@ -79,46 +63,35 @@
         </div>
 
         <nav class="space-y-2 flex-1">
-            <button onclick="openShorts()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-blue-600/10 text-blue-400 border border-blue-600/20 hover:bg-blue-600 hover:text-white transition-all group">
-                <i class="fas fa-play-circle text-xl"></i> 
-                <span class="text-xs font-black uppercase tracking-widest">✨ AI Shorts</span>
-            </button>
-
-            <button class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all group">
+            <button class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
                 <i class="fas fa-user-circle text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">My Profile</span>
             </button>
-            <button onclick="showAbout()" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all group">
+            <button onclick="showAbout()" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
                 <i class="fas fa-info-circle text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">About App</span>
             </button>
-            <a href="mailto:nishanthnishanth47622@gmail.com" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all group">
+            <a href="mailto:nishanthnishanth47622@gmail.com" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
                 <i class="fas fa-paper-plane text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">Contact Support</span>
             </a>
         </nav>
-
         <div class="mt-8 px-2">
-            <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3 px-2">News Language</p>
-            <div class="flex bg-gray-900/50 p-1 rounded-xl border border-gray-800">
-                <button id="langEn" onclick="changeLanguage('en')" class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all bg-blue-600 text-white">ENGLISH</button>
-                <button id="langTa" onclick="changeLanguage('ta')" class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all text-gray-500 hover:text-white">TAMIL</button>
-            </div>
+    <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3 px-2">News Language</p>
+    <div class="flex bg-gray-900/50 p-1 rounded-xl border border-gray-800">
+        <button id="langEn" onclick="changeLanguage('en')" 
+            class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all bg-blue-600 text-white">
+            ENGLISH
+        </button>
+        <button id="langTa" onclick="changeLanguage('ta')" 
+            class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all text-gray-500 hover:text-white">
+            TAMIL
+        </button>
+    </div>
         </div>
-
         <div class="pt-6 border-t border-gray-900 opacity-40 text-center">
             <p class="text-[8px] font-bold tracking-[0.3em]">VERSION 2.4.0</p>
         </div>
-    </div>
-
-    <div id="videoOverlay" class="fixed inset-0 bg-black z-[600] hidden flex-col">
-        <div class="absolute top-6 left-6 z-[700] flex items-center gap-4">
-            <button onclick="closeShorts()" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-all">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <span class="text-[10px] font-black uppercase tracking-widest text-blue-500 bg-black/50 px-3 py-1 rounded-full">AI News Shorts</span>
-        </div>
-        <div id="videoContainer" class="w-full h-full flex flex-col"></div>
     </div>
 
     <header class="p-4 bg-black/60 backdrop-blur-xl sticky top-0 z-[100] border-b border-gray-900">
@@ -146,6 +119,13 @@
             <span class="text-[10px] font-black text-white uppercase italic mx-4">🌍 உலகம்: சர்வதேச செய்திகள் இப்போது உங்கள் தமிழில்..</span>
             <span class="text-[10px] font-black text-gray-700 mx-4">|</span>
             <span class="text-[10px] font-black text-blue-500 uppercase italic mx-4">📍 உள்ளூர்: தமிழ்நாட்டின் முக்கியச் செய்திகள் நேரலையில்..</span>
+            <span class="text-[10px] font-black text-gray-700 mx-4">|</span>
+            <span class="text-[10px] font-black text-white uppercase italic mx-4">🤖 தொழில்நுட்பம்: குரல் வழி தேடல் வசதி இணைக்கப்பட்டுள்ளது..</span>
+        </div>
+        <div class="inline-block animate-marquee">
+            <span class="text-[10px] font-black text-blue-500 uppercase italic mx-4">⚡ முக்கியச் செய்தி: ஜெமினி AI மூலம் செய்திகளின் சுருக்கம் உடனுக்குடன்..</span>
+            <span class="text-[10px] font-black text-gray-700 mx-4">|</span>
+            <span class="text-[10px] font-black text-white uppercase italic mx-4">🌍 உலகம்: சர்வதேச செய்திகள் இப்போது உங்கள் தமிழில்..</span>
         </div>
     </div>
 
