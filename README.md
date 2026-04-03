@@ -20,9 +20,6 @@ The **AI News Reporter** is an advanced web application that leverages modern AI
 
 ### **1. AI-Powered Tamil Summarization**
 The app utilizes the **Gemini 1.5 Flash API** to analyze complex news articles and generate concise, two-line summaries in Tamil. This allows users to grasp the core of any story instantly.
-
-### **2. Real-Time Activity Tracking (EmailJS)**
-To enhance engagement and security, the system is integrated with **EmailJS**. Whenever a user opens the app or performs a search, an automated notification is sent to the developer's personal email
 ## 🛠️ **Professional Tech Stack**
 
 <p align="left">
