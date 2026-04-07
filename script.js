@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
-let currentLang = 'en';
+let currentLang = 'en'; // Default language set to English
 
 // 1. Sidebar Control
 function toggleSidebar() {
@@ -23,6 +23,7 @@ function toggleSidebar() {
 function changeLanguage(lang) {
     currentLang = lang;
     
+    // UI Feedback for Buttons
     const enBtn = document.getElementById('langEn');
     const taBtn = document.getElementById('langTa');
     
@@ -38,7 +39,7 @@ function changeLanguage(lang) {
         taBtn.classList.add('text-gray-500');
     }
 
-    FetchNews();
+    FetchNews(); // Language மாற்றியவுடன் செய்திகளை புதுப்பிக்க
 }
 
 // 3. Fetch News Function
@@ -56,6 +57,7 @@ async function FetchNews(forcedQuery) {
         const ts = new Date().getTime();
         let rssUrl;
 
+        // Language based parameters for Google News
         const hl = currentLang === 'ta' ? 'ta-IN' : 'en-IN';
         const gl = currentLang === 'ta' ? 'IN' : 'US';
         const ceid = currentLang === 'ta' ? 'IN:ta' : 'US:en';
@@ -200,256 +202,4 @@ function showAbout() {
     `This app provides real-time news updates with AI-powered Tamil summaries. It uses advanced RSS syncing to fetch news from global and local sources instantly.`;
     
     alert(aboutText);
-}
-
-// ============================================================
-// 10. TODAY'S NEWS VIDEOS — Daily Updated Tamil & English News
-// ============================================================
-
-// News video channels: Tamil & English with their YouTube channel IDs / live stream IDs
-const NEWS_VIDEO_CHANNELS = [
-    // TAMIL CHANNELS
-    {
-        lang: 'ta',
-        label: 'Thanthi TV',
-        flag: '🔴',
-        type: 'live',
-        // Thanthi TV Live
-        embedUrl: 'https://www.youtube.com/embed/coYw-eVU0Ks?autoplay=1&mute=1',
-    },
-    {
-        lang: 'ta',
-        label: 'Puthiya Thalaimurai',
-        flag: '🔴',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/C3pCk6VHuRk?autoplay=1&mute=1',
-    },
-    {
-        lang: 'ta',
-        label: 'Sun News Live',
-        flag: '🔴',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/bPIHRiEBHuI?autoplay=1&mute=1',
-    },
-    {
-        lang: 'ta',
-        label: 'Raj News Tamil',
-        flag: '🔴',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/IXTiH6jY9N8?autoplay=1&mute=1',
-    },
-    {
-        lang: 'ta',
-        label: 'Kalaignar TV',
-        flag: '🔴',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/xWxkWRZnwKw?autoplay=1&mute=1',
-    },
-    // ENGLISH CHANNELS
-    {
-        lang: 'en',
-        label: 'NDTV 24x7 Live',
-        flag: '🔵',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/Xord_OWZpi8?autoplay=1&mute=1',
-    },
-    {
-        lang: 'en',
-        label: 'Times Now Live',
-        flag: '🔵',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/bP5tSbVHwSQ?autoplay=1&mute=1',
-    },
-    {
-        lang: 'en',
-        label: 'Republic TV Live',
-        flag: '🔵',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/GbEMp5BRBHE?autoplay=1&mute=1',
-    },
-    {
-        lang: 'en',
-        label: 'India Today Live',
-        flag: '🔵',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/IGfp5rr64GE?autoplay=1&mute=1',
-    },
-    {
-        lang: 'en',
-        label: 'CNN-News18 Live',
-        flag: '🔵',
-        type: 'live',
-        embedUrl: 'https://www.youtube.com/embed/MN8p-Vrn6G0?autoplay=1&mute=1',
-    },
-];
-
-let videoLangFilter = 'ta'; // default to Tamil in video panel
-let activeVideoIndex = 0;
-
-function showVideoPanel() {
-    // Close sidebar first
-    toggleSidebar();
-
-    // Remove existing modal if any
-    const existing = document.getElementById('videoPanelModal');
-    if (existing) existing.remove();
-
-    // Build modal
-    const modal = document.createElement('div');
-    modal.id = 'videoPanelModal';
-    modal.style.cssText = `
-        position: fixed; inset: 0; z-index: 2000;
-        background: #050505;
-        display: flex; flex-direction: column;
-        font-family: sans-serif;
-        animation: fadeInModal 0.3s ease;
-    `;
-
-    modal.innerHTML = `
-        <style>
-            @keyframes fadeInModal { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-            .vchannel-btn { 
-                background: #0a0a0a; border: 1px solid #1f1f1f; 
-                color: #9ca3af; border-radius: 16px; padding: 10px 14px;
-                font-size: 9px; font-weight: 900; letter-spacing: 0.15em;
-                text-transform: uppercase; cursor: pointer; 
-                display: flex; align-items: center; gap: 8px;
-                transition: all 0.2s; white-space: nowrap;
-                min-width: 130px;
-            }
-            .vchannel-btn:hover { border-color: #2563eb; color: #fff; }
-            .vchannel-btn.active { background: #1d4ed8; border-color: #2563eb; color: #fff; }
-            .lang-tab { 
-                padding: 8px 20px; border-radius: 999px; font-size: 9px; 
-                font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
-                cursor: pointer; transition: all 0.2s; border: none;
-            }
-            .lang-tab.active { background: #2563eb; color: white; }
-            .lang-tab.inactive { background: transparent; color: #6b7280; }
-            #videoIframe { border: none; width: 100%; height: 100%; border-radius: 0; }
-            .live-badge { 
-                background: #dc2626; color: white; font-size: 8px; font-weight: 900;
-                padding: 2px 7px; border-radius: 4px; letter-spacing: 0.1em;
-                animation: pulse 1.5s infinite;
-            }
-            @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-            .channel-list { 
-                display: flex; gap: 8px; padding: 12px 16px; 
-                overflow-x: auto; flex-shrink: 0;
-                scrollbar-width: none;
-            }
-            .channel-list::-webkit-scrollbar { display: none; }
-        </style>
-
-        <!-- Header -->
-        <div style="background:#000; border-bottom:1px solid #111; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span style="font-size:18px;">📺</span>
-                <div>
-                    <p style="font-size:11px; font-weight:900; color:#3b82f6; text-transform:uppercase; letter-spacing:0.15em; font-style:italic;">TODAY'S NEWS VIDEOS</p>
-                    <p style="font-size:8px; color:#4b5563; font-weight:700; text-transform:uppercase; letter-spacing:0.2em; margin-top:2px;">LIVE 24/7 BROADCAST</p>
-                </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span class="live-badge">● LIVE</span>
-                <button onclick="closeVideoPanel()" style="background:#111; border:none; color:#9ca3af; width:36px; height:36px; border-radius:10px; cursor:pointer; font-size:16px;">✕</button>
-            </div>
-        </div>
-
-        <!-- Lang Tabs -->
-        <div style="background:#000; padding:10px 16px; display:flex; gap:8px; flex-shrink:0; border-bottom:1px solid #0f0f0f;">
-            <button class="lang-tab ${videoLangFilter === 'ta' ? 'active' : 'inactive'}" id="vLangTa" onclick="switchVideoLang('ta')">🇮🇳 Tamil</button>
-            <button class="lang-tab ${videoLangFilter === 'en' ? 'active' : 'inactive'}" id="vLangEn" onclick="switchVideoLang('en')">🌐 English</button>
-        </div>
-
-        <!-- Channel Selector -->
-        <div class="channel-list" id="channelList">
-            ${renderChannelButtons()}
-        </div>
-
-        <!-- Video Player -->
-        <div style="flex:1; background:#000; position:relative; min-height:0;">
-            <iframe id="videoIframe"
-                src="${getFilteredChannels()[0]?.embedUrl || ''}"
-                allow="autoplay; encrypted-media; fullscreen"
-                allowfullscreen>
-            </iframe>
-            <div style="position:absolute; bottom:12px; left:12px; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); border:1px solid #1f2937; border-radius:12px; padding:8px 14px;">
-                <p style="font-size:9px; color:#6b7280; font-weight:700; text-transform:uppercase; letter-spacing:0.15em;">Now Playing</p>
-                <p id="nowPlayingLabel" style="font-size:11px; font-weight:900; color:white; margin-top:2px;">${getFilteredChannels()[0]?.label || ''}</p>
-            </div>
-        </div>
-
-        <!-- Bottom Info -->
-        <div style="background:#000; border-top:1px solid #0f0f0f; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-            <p style="font-size:8px; color:#374151; font-weight:700; letter-spacing:0.2em; text-transform:uppercase;">Daily Updated • Tamil & English Channels</p>
-            <p style="font-size:8px; color:#1d4ed8; font-weight:900; text-transform:uppercase; letter-spacing:0.15em;">AI NEWS REPORTER v2.4</p>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    activeVideoIndex = 0;
-}
-
-function renderChannelButtons() {
-    const channels = getFilteredChannels();
-    return channels.map((ch, i) => `
-        <button class="vchannel-btn ${i === activeVideoIndex ? 'active' : ''}" 
-                id="vch_${i}" onclick="switchVideoChannel(${i})">
-            <span>${ch.flag}</span>
-            <span>${ch.label}</span>
-        </button>
-    `).join('');
-}
-
-function getFilteredChannels() {
-    return NEWS_VIDEO_CHANNELS.filter(ch => ch.lang === videoLangFilter);
-}
-
-function switchVideoLang(lang) {
-    videoLangFilter = lang;
-    activeVideoIndex = 0;
-
-    // Update tab styles
-    document.getElementById('vLangTa').className = `lang-tab ${lang === 'ta' ? 'active' : 'inactive'}`;
-    document.getElementById('vLangEn').className = `lang-tab ${lang === 'en' ? 'active' : 'inactive'}`;
-
-    // Re-render channel buttons
-    document.getElementById('channelList').innerHTML = renderChannelButtons();
-
-    // Load first channel of new lang
-    const channels = getFilteredChannels();
-    if (channels.length > 0) {
-        document.getElementById('videoIframe').src = channels[0].embedUrl;
-        document.getElementById('nowPlayingLabel').textContent = channels[0].label;
-    }
-}
-
-function switchVideoChannel(index) {
-    activeVideoIndex = index;
-    const channels = getFilteredChannels();
-    const ch = channels[index];
-
-    // Update iframe
-    document.getElementById('videoIframe').src = ch.embedUrl;
-    document.getElementById('nowPlayingLabel').textContent = ch.label;
-
-    // Update button styles
-    document.querySelectorAll('.vchannel-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-    });
-}
-
-function closeVideoPanel() {
-    // Stop video before closing to avoid audio continuation
-    const iframe = document.getElementById('videoIframe');
-    if (iframe) iframe.src = '';
-
-    const modal = document.getElementById('videoPanelModal');
-    if (modal) {
-        modal.style.opacity = '0';
-        modal.style.transform = 'translateY(20px)';
-        modal.style.transition = 'all 0.3s ease';
-        setTimeout(() => modal.remove(), 300);
-    }
 }
