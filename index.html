@@ -13,66 +13,26 @@
         @keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
         .animate-loading-bar { animation: loading-bar 2s ease-in-out infinite; }
         
+        /* Sidebar Transitions */
         #sidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 500; }
         .sidebar-open { transform: translateX(0); }
         .sidebar-closed { transform: translateX(-100%); }
         #overlay { transition: opacity 0.3s ease; }
 
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-        .animate-marquee { display: inline-block; animation: marquee 30s linear infinite; }
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
         .animate-marquee:hover { animation-play-state: paused; }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: rgba(5,5,5,0.97); backdrop-filter: blur(20px); border-top: 1px solid #1a1a2e; padding: 8px 0 14px; }
-        .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 8px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; color: #4b5563; padding: 4px 0; }
-        .nav-tab.active { color: #3b82f6; }
-        .nav-tab i { font-size: 18px; }
-
-        /* Page sections */
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Video Section Styles */
-        @keyframes live-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5);} 50%{box-shadow:0 0 0 6px rgba(239,68,68,0);} }
-        .live-badge-anim { animation: live-pulse 1.4s ease-in-out infinite; }
-
-        .shorts-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 16px 16px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .shorts-scroll::-webkit-scrollbar { display: none; }
-
-        .short-card { flex: 0 0 130px; scroll-snap-align: start; background: #0a0a0a; border: 1px solid #1a1a2e; border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-        .short-card:hover { transform: scale(1.03); box-shadow: 0 0 18px rgba(59,130,246,0.3); }
-        .short-thumb { width: 100%; aspect-ratio: 9/16; background: linear-gradient(160deg,#0d1f3c,#1a0a2e); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .short-thumb img { width:100%; height:100%; object-fit:cover; }
-        .short-thumb .play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.3); }
-        .play-circle { width:34px; height:34px; background:rgba(37,99,235,0.85); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 14px rgba(59,130,246,0.5); }
-
-        .live-row-scroll { display:flex; gap:12px; overflow-x:auto; padding:0 16px 16px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
-        .live-row-scroll::-webkit-scrollbar { display:none; }
-        .live-card { flex:0 0 200px; scroll-snap-align:start; background:#0a0a0a; border:1px solid #1a1a2e; border-radius:16px; overflow:hidden; cursor:pointer; transition:transform 0.2s; }
-        .live-card:hover { transform:scale(1.03); box-shadow:0 0 18px rgba(59,130,246,0.25); }
-        .live-thumb { width:100%; aspect-ratio:16/9; background:#111; position:relative; overflow:hidden; }
-        .live-thumb img { width:100%; height:100%; object-fit:cover; }
-
-        /* Video Modal */
-        #videoModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:999; align-items:center; justify-content:center; padding:16px; }
-        #videoModal.open { display:flex; }
-        #modalBox { width:100%; max-width:400px; background:#0a0a0a; border:1px solid #1e3a5f; border-radius:20px; overflow:hidden; box-shadow:0 0 40px rgba(59,130,246,0.2); }
-        #modalVidWrap { width:100%; aspect-ratio:16/9; background:#000; }
-        #modalVidWrap.short-ratio { aspect-ratio:9/16; max-height:58vh; }
-        #modalVidWrap iframe { width:100%; height:100%; border:none; }
-
-        /* Daily video cards */
-        .daily-vid-card { background:#0a0a0a; border:1px solid #1a1a1a; border-radius:24px; overflow:hidden; margin-bottom:14px; transition:box-shadow 0.2s; }
-        .daily-vid-card:hover { box-shadow:0 0 20px rgba(59,130,246,0.2); border-color:rgba(59,130,246,0.3); }
-        .daily-vid-thumb { width:100%; aspect-ratio:16/9; background:#111; position:relative; }
-        .daily-vid-thumb img { width:100%; height:100%; object-fit:cover; }
-        .daily-vid-thumb .play-big { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
-        .play-big-circle { width:48px; height:48px; background:rgba(37,99,235,0.9); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(59,130,246,0.5); }
     </style>
 </head>
 <body class="bg-[#050505] text-white min-h-screen font-sans overflow-x-hidden">
 
-    <!-- SPLASH -->
     <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black">
         <h1 class="text-2xl font-black text-blue-500 tracking-tighter uppercase italic">AI NEWS REPORTER</h1>
         <p class="text-gray-500 text-[10px] mt-2 uppercase tracking-widest font-bold">DEVELOPED BY NISHANTH KN</p>
@@ -81,10 +41,8 @@
         </div>
     </div>
 
-    <!-- OVERLAY -->
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[450] hidden opacity-0"></div>
 
-    <!-- SIDEBAR -->
     <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#0a0a0a] border-r border-gray-900 shadow-2xl sidebar-closed flex flex-col p-6">
         <div class="flex justify-between items-center mb-10">
             <h2 class="text-blue-500 font-black italic tracking-widest">DASHBOARD</h2>
@@ -92,6 +50,7 @@
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
+
         <div class="flex flex-col items-center mb-8 border-b border-gray-800 pb-8">
             <div class="relative">
                 <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png" 
@@ -102,33 +61,39 @@
             <h3 class="font-bold text-lg mt-4 uppercase">NISHANTH KN</h3>
             <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">DATA SCIENTIST</p>
         </div>
+
         <nav class="space-y-2 flex-1">
             <button class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
-                <i class="fas fa-user-circle text-gray-500 group-hover:text-blue-400"></i>
+                <i class="fas fa-user-circle text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">My Profile</span>
             </button>
             <button onclick="showAbout()" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
-                <i class="fas fa-info-circle text-gray-500 group-hover:text-blue-400"></i>
+                <i class="fas fa-info-circle text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">About App</span>
             </button>
             <a href="mailto:nishanthnishanth47622@gmail.com" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-600/10 hover:text-blue-400 transition-all group">
-                <i class="fas fa-paper-plane text-gray-500 group-hover:text-blue-400"></i>
+                <i class="fas fa-paper-plane text-gray-500 group-hover:text-blue-400"></i> 
                 <span class="text-xs font-black uppercase tracking-widest">Contact Support</span>
             </a>
         </nav>
         <div class="mt-8 px-2">
-            <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3 px-2">News Language</p>
-            <div class="flex bg-gray-900/50 p-1 rounded-xl border border-gray-800">
-                <button id="langEn" onclick="changeLanguage('en')" class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all bg-blue-600 text-white">ENGLISH</button>
-                <button id="langTa" onclick="changeLanguage('ta')" class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all text-gray-500 hover:text-white">TAMIL</button>
-            </div>
+    <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3 px-2">News Language</p>
+    <div class="flex bg-gray-900/50 p-1 rounded-xl border border-gray-800">
+        <button id="langEn" onclick="changeLanguage('en')" 
+            class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all bg-blue-600 text-white">
+            ENGLISH
+        </button>
+        <button id="langTa" onclick="changeLanguage('ta')" 
+            class="flex-1 py-2 text-[9px] font-black rounded-lg transition-all text-gray-500 hover:text-white">
+            TAMIL
+        </button>
+    </div>
         </div>
         <div class="pt-6 border-t border-gray-900 opacity-40 text-center">
-            <p class="text-[8px] font-bold tracking-[0.3em]">VERSION 2.5.0</p>
+            <p class="text-[8px] font-bold tracking-[0.3em]">VERSION 2.4.0</p>
         </div>
     </div>
 
-    <!-- HEADER -->
     <header class="p-4 bg-black/60 backdrop-blur-xl sticky top-0 z-[100] border-b border-gray-900">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -137,8 +102,9 @@
                 </button>
                 <h1 class="text-lg font-black text-blue-500 uppercase italic tracking-tighter">AI NEWS REPORTER</h1>
             </div>
+            
             <div class="flex items-center gap-3 bg-gray-900/50 p-1.5 pr-4 rounded-full border border-gray-800">
-                <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png"
+                <img src="https://raw.githubusercontent.com/nishanthnishanth27/AI-NEWS-REPORTER/main/profile.png" 
                      class="w-8 h-8 rounded-full border border-blue-600 object-cover"
                      onerror="this.src='https://ui-avatars.com/api/?name=NK'">
                 <p class="text-[9px] font-black uppercase tracking-widest hidden sm:block">Nishanth</p>
@@ -146,7 +112,6 @@
         </div>
     </header>
 
-    <!-- TICKER -->
     <div class="bg-blue-600/10 border-y border-blue-900/30 py-2.5 overflow-hidden whitespace-nowrap sticky top-[72px] z-40 backdrop-blur-md">
         <div class="inline-block animate-marquee">
             <span class="text-[10px] font-black text-blue-500 uppercase italic mx-4">⚡ முக்கியச் செய்தி: ஜெமினி AI மூலம் செய்திகளின் சுருக்கம் உடனுக்குடன்..</span>
@@ -155,7 +120,7 @@
             <span class="text-[10px] font-black text-gray-700 mx-4">|</span>
             <span class="text-[10px] font-black text-blue-500 uppercase italic mx-4">📍 உள்ளூர்: தமிழ்நாட்டின் முக்கியச் செய்திகள் நேரலையில்..</span>
             <span class="text-[10px] font-black text-gray-700 mx-4">|</span>
-            <span class="text-[10px] font-black text-white uppercase italic mx-4">🎬 புதிய VIDEO SHORTS தினமும் புதுப்பிக்கப்படுகின்றன..</span>
+            <span class="text-[10px] font-black text-white uppercase italic mx-4">🤖 தொழில்நுட்பம்: குரல் வழி தேடல் வசதி இணைக்கப்பட்டுள்ளது..</span>
         </div>
         <div class="inline-block animate-marquee">
             <span class="text-[10px] font-black text-blue-500 uppercase italic mx-4">⚡ முக்கியச் செய்தி: ஜெமினி AI மூலம் செய்திகளின் சுருக்கம் உடனுக்குடன்..</span>
@@ -164,86 +129,27 @@
         </div>
     </div>
 
-    <!-- ═══════════════ NEWS PAGE ═══════════════ -->
-    <div id="page-news" class="page active">
-        <main class="p-4 max-w-6xl mx-auto">
-            <div class="bg-[#0f1115] border border-gray-800 p-2 rounded-full shadow-2xl mt-8 flex items-center gap-2 max-w-2xl mx-auto focus-within:border-blue-600 transition-all">
-                <input type="text" id="searchInput" placeholder="Search news, topics, tech..."
-                       class="flex-1 bg-transparent px-5 outline-none text-gray-300 text-sm">
-                <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-500 hover:text-blue-500 transition-all">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button onclick="FetchNews()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full font-black text-[10px] uppercase transition-all shadow-lg shadow-blue-900/20">SEARCH</button>
-            </div>
-            <div class="flex flex-wrap gap-2 justify-center mt-8">
-                <button onclick="FetchByCategory('Technology')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">💻 Technology</button>
-                <button onclick="FetchByCategory('Sports')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">🏆 Sports</button>
-                <button onclick="FetchByCategory('Business')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">💼 Business</button>
-                <button onclick="FetchByCategory('Local')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">📍 Local</button>
-            </div>
-            <div id="newsGrid" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28"></div>
-        </main>
-    </div>
-
-    <!-- ═══════════════ VIDEO PAGE ═══════════════ -->
-    <div id="page-video" class="page">
-        <div class="pb-28">
-
-            <!-- Language Toggle for Video -->
-            <div class="flex items-center justify-between px-4 pt-6 pb-2">
-                <h2 class="text-[11px] font-black uppercase tracking-[0.2em] text-blue-400">📺 NEWS VIDEOS</h2>
-                <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-800 gap-1">
-                    <button id="vidLangEn" onclick="setVideoLang('en')" class="px-3 py-1.5 text-[8px] font-black rounded-lg transition-all bg-blue-600 text-white uppercase">EN</button>
-                    <button id="vidLangTa" onclick="setVideoLang('ta')" class="px-3 py-1.5 text-[8px] font-black rounded-lg transition-all text-gray-500 hover:text-white uppercase">தமிழ்</button>
-                </div>
-            </div>
-
-            <!-- ── LIVE NOW ── -->
-            <div class="flex items-center gap-2 px-4 pt-4 pb-3">
-                <span class="text-[11px] font-black uppercase tracking-widest text-white">🔴 LIVE NOW</span>
-                <span class="bg-red-600 text-[8px] font-black px-2 py-0.5 rounded uppercase live-badge-anim">● LIVE</span>
-            </div>
-            <div class="live-row-scroll" id="liveRow">
-                <!-- JS rendered -->
-            </div>
-
-            <!-- ── TODAY'S SHORTS ── -->
-            <div class="flex items-center justify-between px-4 pt-2 pb-3">
-                <span class="text-[11px] font-black uppercase tracking-widest text-white">⚡ TODAY'S SHORTS</span>
-                <span id="todayDate" class="text-[9px] text-blue-400 font-bold font-mono"></span>
-            </div>
-            <div class="shorts-scroll" id="shortsRow">
-                <!-- JS rendered -->
-            </div>
-
-            <!-- ── DAILY UPDATES ── -->
-            <div class="flex items-center justify-between px-4 pt-4 pb-3">
-                <span class="text-[11px] font-black uppercase tracking-widest text-white">🗓 DAILY UPDATES</span>
-                <span class="text-[9px] text-blue-500 font-bold cursor-pointer">Archive →</span>
-            </div>
-            <div class="px-4" id="dailyVideoList">
-                <!-- JS rendered -->
-            </div>
-
+    <main class="p-4 max-w-6xl mx-auto">
+        <div class="bg-[#0f1115] border border-gray-800 p-2 rounded-full shadow-2xl mt-8 flex items-center gap-2 max-w-2xl mx-auto focus-within:border-blue-600 transition-all">
+            <input type="text" id="searchInput" placeholder="Search news, topics, tech..." 
+                   class="flex-1 bg-transparent px-5 outline-none text-gray-300 text-sm">
+            <button onclick="startVoiceSearch()" id="micBtn" class="p-3 text-gray-500 hover:text-blue-500 transition-all">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button onclick="FetchNews()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full font-black text-[10px] uppercase transition-all shadow-lg shadow-blue-900/20">Search</button>
         </div>
-    </div>
 
-    <!-- ═══════════════ VIDEO MODAL ═══════════════ -->
-    <div id="videoModal" onclick="closeVideoModal(event)">
-        <div id="modalBox">
-            <div id="modalVidWrap">
-                <iframe id="modalIframe" src="" allowfullscreen></iframe>
-            </div>
-            <div class="p-4">
-                <p id="modalTitle" class="text-xs font-bold text-white mb-1"></p>
-                <p id="modalCat" class="text-[9px] text-blue-400 font-mono uppercase mb-3"></p>
-                <button onclick="closeVideoModalBtn()" class="w-full bg-gray-900 border border-gray-800 text-gray-400 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-blue-500 transition-all">✕ CLOSE</button>
-            </div>
+        <div class="flex flex-wrap gap-2 justify-center mt-8">
+            <button onclick="FetchByCategory('Technology')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">💻 Technology</button>
+            <button onclick="FetchByCategory('Sports')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">🏆 Sports</button>
+            <button onclick="FetchByCategory('Business')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">💼 Business</button>
+            <button onclick="FetchByCategory('Local')" class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-xl text-[9px] font-bold hover:border-blue-500 transition-all uppercase">📍 Local</button>
         </div>
-    </div>
 
-    <!-- FOOTER -->
-    <footer class="p-10 text-center border-t border-gray-900 mt-4 hidden" id="footerSection">
+        <div id="newsGrid" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"></div>
+    </main>
+
+    <footer class="p-10 text-center border-t border-gray-900 mt-20">
         <div class="flex justify-center gap-6 mb-4">
             <a href="https://github.com/nishanthnishanth27" target="_blank" class="text-gray-500 hover:text-white transition-all text-xl"><i class="fab fa-github"></i></a>
             <a href="https://www.linkedin.com/in/nishanth-k-n27092006" target="_blank" class="text-gray-500 hover:text-blue-500 transition-all text-xl"><i class="fab fa-linkedin"></i></a>
@@ -254,44 +160,6 @@
         </div>
     </footer>
 
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav">
-        <div class="flex">
-            <div class="nav-tab active" id="tab-news" onclick="switchTab('news')">
-                <i class="fas fa-newspaper"></i>NEWS
-            </div>
-            <div class="nav-tab" id="tab-video" onclick="switchTab('video')">
-                <i class="fas fa-play-circle"></i>VIDEOS
-            </div>
-            <div class="nav-tab" id="tab-search" onclick="switchTab('news'); document.getElementById('searchInput').focus()">
-                <i class="fas fa-search"></i>SEARCH
-            </div>
-            <div class="nav-tab" id="tab-profile" onclick="toggleSidebar()">
-                <i class="fas fa-user-circle"></i>PROFILE
-            </div>
-        </div>
-    </div>
-
-<script>
-// ─── CONFIG ───────────────────────────────────────
-const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
-let currentLang = 'en';
-let currentVideoLang = 'en';
-
-// ─── VIDEO DATA ───────────────────────────────────
-// Tamil News YouTube Channel IDs & video IDs (real news channels)
-const VIDEO_DATA = {
-    en: {
-        live: [
-            { id: 'hVTN8Rr3ft0', title: 'NDTV 24x7 Live News', cat: '🌍 WORLD' },
-            { id: 'coYw-eVU0Ks', title: 'Republic TV Live', cat: '📍 INDIA' },
-            { id: 'bfzE7TL1IZQ', title: 'Times Now Live', cat: '💼 BUSINESS' },
-        ],
-        shorts: [
-            { id: '7zp1TbLFPp8', title: 'AI Revolution 2026', cat: '💻 TECH', dur: '58s' },
-            { id: 'ZSt9tm3RoUU', title: 'Budget Highlights', cat: '💼 BUSINESS', dur: '45s' },
-            { id: 'MtN1YnoL46Q', title: 'Sports Wrap Today', cat: '🏆 SPORTS', dur: '55s' },
-            { id: 'tgbNymZ7vqY', title: 'Global News Flash', cat: '🌍 WORLD', dur: '50s' },
-        ],
-        daily: [
-            { id: 'hVTN8Rr3ft0',
+    <script src="script.js"></script>
+</body>
+</html>
