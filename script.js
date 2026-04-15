@@ -1,4 +1,4 @@
-const GEMINI_API_KEY = 'AlzaSyCTheqaqkuuScbCqPpiyakl5NA1ZRuRRk';
+const GEMINI_API_KEY = 'AIzaSyD-LFNP6Mt8rssr-5Si1svp3JogOsI0jQs';
 let currentLang = 'en'; // Default language set to English
 
 // 1. Sidebar Control
